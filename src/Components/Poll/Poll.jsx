@@ -29,6 +29,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Switch from '@material-ui/core/Switch';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+
  
 const Centered = styled('div', {
   display: 'flex',
@@ -55,6 +59,7 @@ const initialState = {
             participantName: '',
             participantsInterfaceSerial: [],
             switchState: false,
+            currentParticipantClickSerial: -1,
         }
 
 class Polle extends React.Component {
@@ -117,7 +122,7 @@ class Polle extends React.Component {
             tempParticipantsInterfaceSerial.push(
                 <div key={i}>
                     <Divider />
-                    <ListItem onClick={() => this.handleInvite(true)} button>
+                    <ListItem data-txt={i} onClick={(e) => this.handleInvite(true, e)} button>
                         <ListItemText primary={i+1} />
                     </ListItem>
                 </div>
@@ -125,8 +130,11 @@ class Polle extends React.Component {
         }
         this.setState({participantsInterfaceSerial: tempParticipantsInterfaceSerial, isFinalClientPage: true});
     }
-    handleInvite(inviteSwitch) {
-        this.setState({wantParticipant: inviteSwitch})
+    handleInvite(inviteSwitch, e) {
+        if(e)
+            this.setState({wantParticipant: inviteSwitch, currentParticipantClickSerial: e.target.dataset.txt})
+        else
+            this.setState({wantParticipant: inviteSwitch})
     }
     changeName(event) {
         this.setState({participantName: event.target.value})
@@ -154,6 +162,7 @@ class Polle extends React.Component {
                     </div>
                 )
         })
+        this.setState({participantsInterfaceSerial: tempParticipantsInterfaceSerial});
     }
     toggleSwitch() {
         this.setState({switchState: !this.state.switchState}, () => {
@@ -174,27 +183,33 @@ class Polle extends React.Component {
                     <div>
                     <Paper>
                         {!this.state.isFinalClientPage ?
-                            <Paper>
-                                <Fab
-                                    onClick={() => {this.handleHomeClick();}}
-                                >
-                                    <HomeIcon 
-                                        className={this.props.classes.iconHover} 
-                                        color="error" 
-                                        style={{ fontSize: 30 }} />
-                                </Fab>
-                                <Rightened>
-                                    <Fab>
-                                        <Grid item xs={8}>
-                                            <ThreeSixtyIcon 
-                                                onClick={() => this.toggleNext(false)}
-                                                color="error" 
-                                                className={this.props.classes.icon}
-                                            />
-                                        </Grid>
+                            <AppBar position="static">
+                                <Toolbar>
+                                    <Fab
+                                        onClick={() => {this.handleHomeClick();}}
+                                    >
+                                        <HomeIcon 
+                                            className={this.props.classes.iconHover} 
+                                            color="error" 
+                                            style={{ fontSize: 30 }} />
                                     </Fab>
-                                </Rightened>
-                            </Paper> : null
+                                    <Typography variant="h6" className={this.props.classes.title}>
+                                        &nbsp; aire
+                                    </Typography>
+                                    <Rightened>
+                                        <Fab>
+                                            <Grid item xs={8}>
+                                                <ThreeSixtyIcon 
+                                                    onClick={() => this.toggleNext(false)}
+                                                    color="error" 
+                                                    className={this.props.classes.icon}
+                                                />
+                                            </Grid>
+                                        </Fab>
+                                    </Rightened>
+                                </Toolbar>
+                            </AppBar> : null
+                           
                         }
 
                         <Centered>
@@ -338,7 +353,7 @@ class Polle extends React.Component {
                           </Button>
                           <Button onClick={() => 
                                     {
-                                        this.disableCurrentParticipant();
+                                        this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
                                         this.handleInvite(false);
                                     }}
                                     color="primary"
@@ -393,6 +408,9 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     maxWidth: '360px',
     backgroundColor: theme.palette.background.paper,
+  },
+  title: {
+    flexGrow: 1,
   },
 }));
  

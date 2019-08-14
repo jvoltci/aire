@@ -24,10 +24,10 @@ class Home extends React.Component {
       <div id="home" className="container">
       
         <h3 id="u1">
-          <span id="u11">un</span>
-          <span id="u12">s</span>
-          <span id="u13">ka</span>
-          <span id="u14">i</span>
+          <span id="u11">a</span>
+          <span id="u12">i</span>
+          <span id="u13">r</span>
+          <span id="u14">e</span>
         </h3>
 
         <FormControl>

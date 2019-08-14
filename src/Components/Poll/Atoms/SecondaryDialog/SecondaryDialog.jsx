@@ -44,7 +44,7 @@ class SecondaryDialog extends React.Component {
 		        <DialogContent>
 		          <TextField
 			        id="outlined-multiline-flexible"
-			        label="Questionaire"
+			        label="Questionnaire"
 			        multiline
 			        rowsMax="4"
 			        onChange={(e) => this.changeAsk(e)}
