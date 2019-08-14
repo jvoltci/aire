@@ -1,2 +1,2 @@
-# unskai
+# aire
 A smart polling system.
