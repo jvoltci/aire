@@ -1,5 +1,7 @@
 import React from 'react';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+//import { createHashHistory } from 'history'
+
 import './App.css';
 import Home from './Components/Home/Home.jsx'
 import Poll from './Components/Poll/Poll.jsx'
@@ -7,7 +9,7 @@ import Poll from './Components/Poll/Poll.jsx'
 //import {styled} from 'baseui';
 
 const initialState = {
-      pseudonym: '',
+      pseudonym: 'flai',
       password: '',
       redirect: false
     }
@@ -41,6 +43,7 @@ class App extends React.Component {
       <HashRouter>
         <Switch>
           <Route path='/' component={() => <Home 
+            pseudonym={this.state.pseudonym}
             redirect={this.state.redirect}
             handleRedirect={this.handleRedirect.bind(this)}/>
           } exact/>

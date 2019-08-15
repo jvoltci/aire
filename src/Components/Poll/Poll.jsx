@@ -1,12 +1,11 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+
 import PrimaryDialog from './Atoms/PrimaryDialog/PrimaryDialog.jsx';
 import SecondaryDialog from './Atoms/SecondaryDialog/SecondaryDialog.jsx';
  
 import {useStyletron, styled} from 'baseui';
 import {Block} from 'baseui/block';
-import {Button, SHAPE} from 'baseui/button';
-import Plus from 'baseui/icon/plus';
 import {Heading, HeadingLevel} from 'baseui/heading';
 import {StatefulList} from 'baseui/dnd-list';
 
@@ -34,12 +33,12 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Slide from '@material-ui/core/Slide';
+import AddIcon from '@material-ui/icons/Add';
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
 
 const Centered = styled('div', {
   display: 'flex',
@@ -80,7 +79,7 @@ const Head = ({classes, handleHomeClick, toggleDialog, handleWarningClick, warni
                     >
                         <HomeIcon 
                             className={iconHover} 
-                            color="error" 
+                            color="secondary" 
                             style={{ fontSize: 30 }} />
                     </Fab>
                     <Dialog
@@ -124,7 +123,7 @@ const Head = ({classes, handleHomeClick, toggleDialog, handleWarningClick, warni
                             <Grid item xs={8}>
                                 <ThreeSixtyIcon 
                                     onClick={() => switchPage(onPage-1)}
-                                    color="error" 
+                                    color="secondary" 
                                     className={icon}
                                 />
                             </Grid>
@@ -188,7 +187,7 @@ class Polle extends React.Component {
         })
     }
     handleWarningClick() {
-        this.props.handleRedirect('', false);
+        this.props.handleRedirect('flai', false);
         localStorage.setItem('pseudonym', JSON.stringify(this.props.initialState));
         localStorage.setItem('poll', JSON.stringify(initialState));
         this.setState({homeClick: true});
@@ -282,7 +281,12 @@ class Polle extends React.Component {
                                     <HeadingLevel>
                                     </HeadingLevel>
                                     <HeadingLevel>
-                                        <Heading>{this.props.pseudonym}</Heading>
+                                        <Heading>
+                                            <Typography className={this.props.classes.pseudonym}>
+                                                {this.props.pseudonym}
+                                            </Typography>
+                                        
+                                        </Heading>
                                     </HeadingLevel>
                                 </HeadingLevel>
              
@@ -314,25 +318,15 @@ class Polle extends React.Component {
                                     <Centered>
                      
                                         <Block paddingTop="500px" />
-                     
-                                        <Button 
-                                            overrides={
-                                                {
-                                                    BaseButton: {
-                                                        style: ({ $theme }) => {
-                                                                  return {
-                                                                    outline: `${$theme.colors.warning}`,
-                                                                    backgroundColor: $theme.colors.warning
-                                                                  };
-                                                                }
-                                                    }
-                                                }
-                                            }
-                                            shape={SHAPE.round}
-                                            onClick={() => this.toggleDialog("primary", true)}
+                                        <Fab 
+                                        size="large" 
+                                        onClick={(e) => this.toggleDialog("primary", true) }
+                                        color="secondary" 
+                                        aria-label="add" 
+                                        className={this.props.classes.fab}
                                         >
-                                            <Plus color={'white'} size={50} />
-                                        </Button>
+                                            <AddIcon />
+                                        </Fab>
                      
                                         <PrimaryDialog space={this.props.space} isPrimaryOpen={isPrimaryOpen} toggleDialog={this.toggleDialog.bind(this)} />
                                         <SecondaryDialog 
@@ -341,6 +335,9 @@ class Polle extends React.Component {
                                             updatePollQuestions={this.updatePollQuestions.bind(this)}
                                              />
 
+                                        
+                                    </Centered> 
+                                    <Centered>
                                         <ButtonMaterialUI
                                             onClick={() => this.switchPage(2)}
                                             variant="contained" 
@@ -349,7 +346,7 @@ class Polle extends React.Component {
                                             Next
                                             <Icon className={this.props.classes.rightIcon}>send</Icon>
                                         </ButtonMaterialUI>
-                                    </Centered> 
+                                    </Centered>
                                 </div> :
                             /*Participant tune*/
                                 <div>
@@ -412,12 +409,12 @@ class Polle extends React.Component {
                               />
                             </DialogContent>
                             <DialogActions>
-                              <Button 
+                              <ButtonMaterialUI 
                                 onClick={() => this.handleInvite(false)}
                                 color="primary">
                                 Cancel
-                              </Button>
-                              <Button onClick={() => 
+                              </ButtonMaterialUI>
+                              <ButtonMaterialUI onClick={() => 
                                         {
                                             this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
                                             this.handleInvite(false);
@@ -426,7 +423,7 @@ class Polle extends React.Component {
                                         variant="contained"
                                         >
                                 Enter
-                              </Button>
+                              </ButtonMaterialUI>
                             </DialogActions>
                         </Dialog>
                     </Centered>
@@ -466,6 +463,7 @@ const useStyles = makeStyles(theme => ({
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
+    maxlength: 200,
   },
   icon: {
     margin: theme.spacing(0),
@@ -487,6 +485,17 @@ const useStyles = makeStyles(theme => ({
     color: red;
     padding: 0 30px;
   `,
+  fab: {
+    margin: theme.spacing(1),
+  },
+  pseudonym: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+    color: "teal",
+    fontFamily: "Roboto",
+    fontSize: "3.7rem"
+  },
+
 }));
  
 const Poll = ({pseudonym, initialState, handleRedirect}) => {

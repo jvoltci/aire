@@ -2,17 +2,52 @@ import React from 'react';
 import {Redirect} from 'react-router-dom';
 import './Home.css';
 
-//import {styled} from 'baseui';
-import {FormControl} from 'baseui/form-control';
-import { Input } from "baseui/input";
-import { Button } from "baseui/button";
+import {styled} from 'baseui';
+import {Block} from 'baseui/block';
 
+import ButtonMaterialUI from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 
-class Home extends React.Component {
+const Centered = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100%',
+});
+
+const ValidationTextField = withStyles({
+  root: {
+    '& input:valid + fieldset': {
+      borderColor: 'green',
+      borderWidth: 2,
+    },
+    '& input:invalid + fieldset': {
+      borderColor: 'red',
+      borderWidth: 2,
+    },
+    '& input:valid:focus + fieldset': {
+      borderLeftWidth: 6,
+      padding: '4px !important', // override inline-style
+    },
+  },
+})(TextField);
+
+const useStyles = makeStyles(theme => ({
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  margin: {
+    margin: theme.spacing(1),
+  },
+}));
+
+class HomeI extends React.Component {
   constructor() {
     super();
     this.state = {
-      pseudonym: ''
+      pseudonym: 'flai'
     }
   }
   changePseudonym = (event) => {
@@ -30,39 +65,37 @@ class Home extends React.Component {
           <span id="u14">e</span>
         </h3>
 
-        <FormControl>
-          <div>
-            <Input
-              startEnhancer="#"
-              onChange={(e) => this.changePseudonym(e)}
-              placeholder="Pseudonym"
-              positive
-            />
-            <br/>
-            <Button onClick={() => this.props.handleRedirect(this.state.pseudonym, true)}>Lets Get Started</Button>
-          </div>
-        </FormControl>
+        <form className={this.props.classes.root} noValidate>
+          <ValidationTextField fullWidth
+            onChange={(e) => this.changePseudonym(e)}
+            className={this.props.classes.margin}
+            label="Survey name"
+            required
+            variant="outlined"
+            defaultValue={this.props.pseudonym}
+            id="validation-outlined-input"
+          />
+        </form>
+        <Centered>
+          <Block paddingTop="300px" />
+          <ButtonMaterialUI size="large" 
+            color="primary" 
+            variant="contained" 
+            onClick={() => this.props.handleRedirect(this.state.pseudonym, true)}>
+            Lets Get Started
+          </ButtonMaterialUI>
+        </Centered>
 
       </div>
     );
   }
 }
 
+const Home = ({handleRedirect, redirect, pseudonym}) => {
+  const classes = useStyles();
+  return(
+    <HomeI pseudonym={pseudonym} redirect={redirect} handleRedirect={handleRedirect} classes={classes} />
+  )
+}
+
 export default Home;
-
-/*<div className="row">
-          <div className="col-md-12" align="center">
-            <form onSubmit={e => this.state.url.substring(0, 6)==="magnet"?this.handleMagnet(e):this.handleElse(e)} method="post" action="https://flai-api.herokuapp.com/download" >
-              <div className="form-group">
-                
-                <input onChange={(e) => this.changeURL(e)}
-                 type="text" name="user[url]" required className="form-control" placeholder="Pseudonym" id="u2" />
-                <input onChange={(e) => this.changePassword(e)}
-                 type="password" name="user[password]" required className="form-control" placeholder="Password" id="u3" />
-                 <p/>
-                <button id="buttonS" type="submit" className="btn btn-lg">POLL!</button>
-              </div>
-            </form>
-
-          </div>
-        </div>*/
