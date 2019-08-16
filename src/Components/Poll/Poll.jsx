@@ -1,5 +1,6 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import './Poll.css'
 
 import PrimaryDialog from './Atoms/PrimaryDialog/PrimaryDialog.jsx';
 import SecondaryDialog from './Atoms/SecondaryDialog/SecondaryDialog.jsx';
@@ -7,9 +8,8 @@ import SecondaryDialog from './Atoms/SecondaryDialog/SecondaryDialog.jsx';
 import {useStyletron, styled} from 'baseui';
 import {Block} from 'baseui/block';
 import {Heading, HeadingLevel} from 'baseui/heading';
-import {StatefulList} from 'baseui/dnd-list';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 import ButtonMaterialUI from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
@@ -28,17 +28,46 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogContent from '@material-ui/core/DialogContent';
 import Switch from '@material-ui/core/Switch';
 import FormGroup from '@material-ui/core/FormGroup';
+import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Slide from '@material-ui/core/Slide';
 import AddIcon from '@material-ui/icons/Add';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import { green, red } from '@material-ui/core/colors';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+
+
 
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
+const GreenRadio = withStyles({
+  root: {
+    color: green[400],
+    '&$checked': {
+      color: green[600],
+    },
+  },
+  checked: {},
+})(props => <Radio color="default" {...props} />);
+
+const RedRadio = withStyles({
+  root: {
+    color: red[400],
+    '&$checked': {
+      color: red[600],
+    },
+  },
+  checked: {},
+})(props => <Radio color="default" {...props} />);
 
 const Centered = styled('div', {
   display: 'flex',
@@ -56,13 +85,13 @@ const Rightened = styled('div', {
 const initialState = {
             isPrimaryOpen: false,
             isSecondaryOpen: false,
-            pollQuestions: [],
             homeClick: false,
             onPage: 1,
             totalParticipants: 0,
             wantParticipant: false,
             participantName: '',
-            participantsInterfaceSerial: { list: [] },
+            listParticipants: [], 
+            listQnP: [],
             switchState: false,
             currentParticipantClickSerial: -1,
             warning: false,
@@ -146,6 +175,7 @@ class Polle extends React.Component {
         else {
           this.state = JSON.parse(localStorage.getItem('poll'));
         }
+        this.myRef = React.createRef();
     }
  
     toggleDialog(surface, dialogSwitch) {
@@ -167,19 +197,20 @@ class Polle extends React.Component {
     }
  
     updatePollQuestions(question) {
-        const prevQ = this.state.pollQuestions;
+        const prevQ = this.state.listQnP;
         prevQ.push(question);
-        this.setState({pollQuestions: prevQ}, () => {
+        this.setState({listQnP: prevQ}, () => {
             localStorage.setItem('poll', JSON.stringify(this.state))
         });
     }
  
-    removeItem(index) {
-        const prevQ = this.state.pollQuestions;
-        prevQ.splice(index, 1);
-        this.setState({pollQuestions: prevQ}, () => {
-            localStorage.setItem('poll', JSON.stringify(this.state))
-        });
+    removeItem(surface, index) {
+        console.log(index);
+        if(surface === "questionPolling") {
+            let temp = this.state.listQnP;
+            temp.splice(Number(index), 1);
+            this.setState({listQnP: temp}, () => localStorage.setItem('poll', JSON.stringify(this.state)))
+        }
     }
     handleHomeClick() {
         this.setState({warning: true}, () => {
@@ -201,62 +232,125 @@ class Polle extends React.Component {
     }
     handleFinal() {
         
-        const listSerial = [];
+        const listSerials = [];
         for(let i = 0; i < this.state.totalParticipants; ++i) {
-            listSerial.push(i)
+            listSerials.push(i)
         }
-        this.setState({participantsInterfaceSerial: {list: listSerial}, onPage: 3}, 
+        this.setState({listParticipants: listSerials, onPage: 3}, 
             () => localStorage.setItem('poll', JSON.stringify(this.state)));
     }
     handleInvite(inviteSwitch, e) {
+
         if(e)
-            this.setState({wantParticipant: inviteSwitch, currentParticipantClickSerial: e.target.dataset.txt})
+            this.setState({wantParticipant: inviteSwitch, currentParticipantClickSerial: e.target.dataset.txt}, () =>  localStorage.setItem('poll', JSON.stringify(this.state)))
         else
-            this.setState({wantParticipant: inviteSwitch})
+            this.setState({wantParticipant: inviteSwitch}, () => localStorage.setItem('poll', JSON.stringify(this.state)))
     }
     changeName(event) {
         this.setState({participantName: event.target.value})
     }
     disableCurrentParticipant(index) {
-        const listSerial = [];
-        for(let i = 0; i < this.state.totalParticipants; ++i) {
-            if(index === i)
-                listSerial.push(-1);
-            listSerial.push(i);
-        }
-        this.setState({participantsInterfaceSerial: {list: listSerial}}, () => localStorage.setItem('poll', JSON.stringify(this.state)));
+        const listSerials = this.state.listParticipants;
+        for(let i = 0; i < this.state.totalParticipants; ++i)
+            if(index === i.toString()) 
+                listSerials[i] =  -1;
+        this.setState({listParticipants: listSerials}, () => localStorage.setItem('poll', JSON.stringify(this.state)));
     }
     toggleSwitch() {
         this.setState({switchState: !this.state.switchState}, () => {
             localStorage.setItem('poll', JSON.stringify(this.state));
         })
     }
+    componentDidMount() {
+        window.scrollTo(0, this.myRef.offsetTop);
+    }
     render() {
         if(this.state.homeClick) {
             return (<Redirect to={'/'} />)
         }
 
-        const { isPrimaryOpen, isSecondaryOpen, pollQuestions } = this.state;
-        const list = this.state.participantsInterfaceSerial.list.map((serial, i) => {
+        const { isPrimaryOpen, isSecondaryOpen } = this.state;
+
+    /*List Participants*/
+        const listParticipants = this.state.listParticipants.map((serial, i) => {
             if(serial === -1)
                 return(
                     <div key={i}>
-                        <Divider />
                         <ListItem disabled data-txt={i} onClick={(e) => this.handleInvite(true, e)} button>
                             <ListItemText primary={i+1} />
                         </ListItem>
+                        <Divider />
                     </div>
                 )
             else
                 return(
                     <div key={i}>
-                        <Divider />
                         <ListItem data-txt={i} onClick={(e) => this.handleInvite(true, e)} button>
                             <ListItemText primary={i+1} />
                         </ListItem>
+                        <Divider />
                     </div>
                 )
         });
+
+    /*List Questions*/
+        const listQnP = this.state.listQnP.map((data, i) => {
+            return(
+                <div key={i}>
+                    <ListItem >
+                            <SnackbarContent className={this.props.classes.snacker}
+                              aria-describedby="client-snackbar"
+                              message={
+                                <span id="client-snackbar" className={this.props.classes.message}>
+                                    <span>Q.{i+1} &nbsp;</span>
+                                    {data}
+                                    <IconButton data-txt={i} onClick={(e) => this.removeItem("questionPolling", e.target.dataset.txt)} 
+                                        aria-label="delete" 
+                                        className={this.props.classes.margin} size="small">
+                                      <DeleteIcon id="trash" fontSize="small" />
+                                    </IconButton>
+                                </span>
+                              }
+                            />
+                    </ListItem>
+                    <FormControl component="fieldset" className={this.props.classes.formControl}>
+                        <RadioGroup row
+                          className={this.props.classes.group}
+                          value="1"
+                        >
+                        <FormControlLabel
+                        value="1"
+                        control={
+                            <GreenRadio
+                            checked={'a' === 'c'}
+                            value="c"
+                            name="radio-button-demo"
+                            inputProps={{ 'aria-label': 'C' }}
+                            />
+                        }
+                        label="Yes"
+                        labelPlacement="end"
+                        />
+
+                        <FormControlLabel
+                        value="0"
+                        control={
+                            <RedRadio
+                            checked={'b' === 'c'}
+                            value="c"
+                            name="radio-button-demo"
+                            inputProps={{ 'aria-label': 'C' }}
+                            />
+                        }
+                        label="No"
+                        labelPlacement="end"
+                        />
+                        </RadioGroup>
+                    </FormControl>
+                    <Divider />
+                </div>
+            )
+        })
 
         return(
             <div>
@@ -273,6 +367,7 @@ class Polle extends React.Component {
                     this.state.onPage < 3 ?
                         <div>
                         <Paper>
+                            {/*Heading Box | Home and Back Button*/}
                             <Centered>
 
                                 <Block paddingTop="100px" />
@@ -297,38 +392,34 @@ class Polle extends React.Component {
                             this.state.onPage === 1?
                         /*Main Poll page*/
                                 <div>
+
+                                    {/*List Questions and Poll*/}
                                     <Paper>
-                                        <StatefulList
-                                            removable
-                                            initialState={{
-                                              items: pollQuestions,
-                                            }}
-                                            overrides={{
-                                              Label: {
-                                                style: ({$isDragged, $theme}) => ({
-                                                  fontSize: $isDragged ? '20px' : null,
-                                                  color: $isDragged ? $theme.colors.warning : null,
-                                                }),
-                                              },
-                                            }}
-                                            onChange={(oldIndex, newIndex) => {this.removeItem(oldIndex)} }
-                                          />
+                                        <List component="nav" aria-label="main mailbox folders">
+                                        {listQnP}
+                                        </List>
                                     </Paper>
                             
                                     <Centered>
-                     
+                                        
+                                        {/*Add Button*/}
                                         <Block paddingTop="500px" />
-                                        <Fab 
-                                        size="large" 
-                                        onClick={(e) => this.toggleDialog("primary", true) }
-                                        color="secondary" 
-                                        aria-label="add" 
-                                        className={this.props.classes.fab}
-                                        >
-                                            <AddIcon />
-                                        </Fab>
-                     
+                                        <div id="scroll" myref={this.myRef}>
+                                            <Fab 
+                                            size="large" 
+                                            onClick={(e) => this.toggleDialog("primary", true) }
+                                            color="secondary" 
+                                            aria-label="add" 
+                                            className={this.props.classes.fab}
+                                            >
+                                                <AddIcon />
+                                            </Fab>
+                                        </div>
+                                        
+                                        {/*Question or Poll Dialog Box*/}
                                         <PrimaryDialog space={this.props.space} isPrimaryOpen={isPrimaryOpen} toggleDialog={this.toggleDialog.bind(this)} />
+
+                                        {/*Enter Poll Question Dialog Box*/}
                                         <SecondaryDialog 
                                             isSecondaryOpen={isSecondaryOpen} 
                                             toggleDialog={this.toggleDialog.bind(this)}
@@ -337,6 +428,8 @@ class Polle extends React.Component {
 
                                         
                                     </Centered> 
+
+                                    {/*Next Button on page 1*/}
                                     <Centered>
                                         <ButtonMaterialUI
                                             onClick={() => this.switchPage(2)}
@@ -348,7 +441,7 @@ class Polle extends React.Component {
                                         </ButtonMaterialUI>
                                     </Centered>
                                 </div> :
-                            /*Participant tune*/
+                            /*Participant Tune*/
                                 <div>
                                     <Paper>
                                         <Centered>
@@ -372,6 +465,7 @@ class Polle extends React.Component {
                                             </FormGroup>
                                         </Centered>
                                     </Paper>
+                                    {/*Done Button on Page 2 Participants*/}
                                     <Centered>
                                             <Block paddingTop="300px" />
                                             <ButtonMaterialUI
@@ -386,12 +480,12 @@ class Polle extends React.Component {
                                 </div>
                         }
                     </div> : 
-                    /*Participants List*/
+                    /*Participants List Page 3*/
                     <Centered>
 
                         <List component="nav" className={this.props.classes.root} aria-label="mailbox folders">
 
-                          {list}
+                          {listParticipants}
 
                         </List>
 
@@ -415,7 +509,7 @@ class Polle extends React.Component {
                                 Cancel
                               </ButtonMaterialUI>
                               <ButtonMaterialUI onClick={() => 
-                                        {
+                                        {   /*Bug here in this.state.currentParticipantClickSerial, sometimes it gives undefined*/
                                             this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
                                             this.handleInvite(false);
                                         }}
@@ -495,7 +589,26 @@ const useStyles = makeStyles(theme => ({
     fontFamily: "Roboto",
     fontSize: "3.7rem"
   },
-
+  chipRoot: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: theme.spacing(1),
+  },
+  formControl: {
+    margin: theme.spacing(3),
+  },
+  group: {
+    margin: theme.spacing(1, 0),
+  },
+  message: {
+    display: 'flex',
+  },
+  snacker: {
+    backgroundColor: theme.palette.primary.main,
+  }
 }));
  
 const Poll = ({pseudonym, initialState, handleRedirect}) => {

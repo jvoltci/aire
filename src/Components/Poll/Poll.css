@@ -1,0 +1,8 @@
+#scroll {
+	scroll-behavior: smooth;
+}
+#trash {
+	display: flex;
+	float: right;
+	height: 100%;
+}

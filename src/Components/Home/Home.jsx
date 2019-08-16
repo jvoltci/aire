@@ -65,7 +65,7 @@ class HomeI extends React.Component {
           <span id="u14">e</span>
         </h3>
 
-        <form className={this.props.classes.root} noValidate>
+        <React.Fragment className={this.props.classes.root} noValidate>
           <ValidationTextField fullWidth
             onChange={(e) => this.changePseudonym(e)}
             className={this.props.classes.margin}
@@ -75,7 +75,7 @@ class HomeI extends React.Component {
             defaultValue={this.props.pseudonym}
             id="validation-outlined-input"
           />
-        </form>
+        </React.Fragment>
         <Centered>
           <Block paddingTop="300px" />
           <ButtonMaterialUI size="large" 
