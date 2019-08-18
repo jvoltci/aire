@@ -379,8 +379,6 @@ class Polle extends React.Component {
              
                                 <HeadingLevel>
                                     <HeadingLevel>
-                                    </HeadingLevel>
-                                    <HeadingLevel>
                                         <Heading>
                                             <Typography className={this.props.classes.pseudonym}>
                                                 {this.props.pseudonym}
@@ -464,6 +462,7 @@ class Polle extends React.Component {
                                             }}
                                             margin="normal"
                                             variant="outlined"
+                                            autoFocus
                                             />
                                             <FormGroup>
                                               <FormControlLabel
@@ -521,6 +520,7 @@ class Polle extends React.Component {
                                         onChange={(e) => this.changeName(e)}
                                         margin="normal"
                                         variant="outlined"
+                                        autoFocus
                                       />
                                     </DialogContent>
                                     <DialogActions>

@@ -50,6 +50,7 @@ class SecondaryDialog extends React.Component {
 			        onChange={(e) => this.changeAsk(e)}
 			        margin="normal"
 			        variant="outlined"
+			        autoFocus
 			      />
 		        </DialogContent>
 		        <DialogActions>
