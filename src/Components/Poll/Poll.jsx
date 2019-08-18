@@ -20,7 +20,6 @@ import Grid from '@material-ui/core/Grid';
 import ThreeSixtyIcon from '@material-ui/icons/ThreeSixty';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -489,51 +488,63 @@ class Polle extends React.Component {
                                 </div>
                         }
                     </div> : 
-                    /*Participants List Page 3*/
-                    <Centered>
+                    {
+                        onPage === 4 ?
+                        <div>
+                            <Paper>
 
-                        <List component="nav" className={this.props.classes.root} aria-label="mailbox folders">
+                            </Paper>
 
-                          {listParticipants}
+                            <Paper>
+                                
+                            </Paper>
+                        </div> :
+                        /*Participants List Page 3*/
+                        <Centered>
 
-                        </List>
+                            <List component="nav" className={this.props.classes.root} aria-label="mailbox folders">
 
-                        <Dialog fullWidth open={this.state.wantParticipant} onClose={() => {
-                              this.handleInvite(false);
-                            }} 
-                            aria-labelledby="form-dialog-title">
-                            <DialogContent>
-                              <TextField
-                                required
-                                id="outlined-multiline-flexible"
-                                label="Name"
-                                onChange={(e) => this.changeName(e)}
-                                margin="normal"
-                                variant="outlined"
-                              />
-                            </DialogContent>
-                            <DialogActions>
-                              <ButtonMaterialUI 
-                                onClick={() => this.handleInvite(false)}
-                                color="primary">
-                                Cancel
-                              </ButtonMaterialUI>
-                              <ButtonMaterialUI onClick={() => 
-                                        {   
-                                            if(this.state.participantName) {
-                                                this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
-                                                this.handleInvite(false);
+                              {listParticipants}
+
+                            </List>
+
+                            <Dialog fullWidth open={this.state.wantParticipant} onClose={() => {
+                                  this.handleInvite(false);
+                                }} 
+                                aria-labelledby="form-dialog-title">
+                                <DialogContent>
+                                  <TextField
+                                    required
+                                    id="outlined-multiline-flexible"
+                                    label="Name"
+                                    onChange={(e) => this.changeName(e)}
+                                    margin="normal"
+                                    variant="outlined"
+                                  />
+                                </DialogContent>
+                                <DialogActions>
+                                  <ButtonMaterialUI 
+                                    onClick={() => this.handleInvite(false)}
+                                    color="primary">
+                                    Cancel
+                                  </ButtonMaterialUI>
+                                  <ButtonMaterialUI onClick={() => 
+                                            {   
+                                                if(this.state.participantName) {
+                                                    this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
+                                                    this.handleInvite(false);
+                                                }
                                             }
                                         }
-                                    }
-                                        color="primary"
-                                        variant="contained"
-                                        >
-                                Enter
-                              </ButtonMaterialUI>
-                            </DialogActions>
-                        </Dialog>
-                    </Centered>
+                                            color="primary"
+                                            variant="contained"
+                                            >
+                                    Enter
+                                  </ButtonMaterialUI>
+                                </DialogActions>
+                            </Dialog>
+                        </Centered>
+                    }
                 }
                 </div>
             </div>
