@@ -421,7 +421,7 @@ class Polle extends React.Component {
                                             </Fab>
                                         </div>
                                         
-                                        {/*Question or Poll Dialog Box*/}
+                                        {/*Question or Poll Dialog Box check*/}
                                         <PrimaryDialog space={this.props.space} isPrimaryOpen={isPrimaryOpen} toggleDialog={this.toggleDialog.bind(this)} />
 
                                         {/*Enter Poll Question Dialog Box*/}
