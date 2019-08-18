@@ -488,63 +488,65 @@ class Polle extends React.Component {
                                 </div>
                         }
                     </div> : 
-                    {
-                        onPage === 4 ?
-                        <div>
-                            <Paper>
+                    <div>
+                        {
+                            this.state.onPage === 4 ?
+                            <div>
+                                <Paper>
 
-                            </Paper>
+                                </Paper>
 
-                            <Paper>
-                                
-                            </Paper>
-                        </div> :
-                        /*Participants List Page 3*/
-                        <Centered>
+                                <Paper>
+                                    
+                                </Paper>
+                            </div> :
+                            /*Participants List Page 3*/
+                            <Centered>
 
-                            <List component="nav" className={this.props.classes.root} aria-label="mailbox folders">
+                                <List component="nav" className={this.props.classes.root} aria-label="mailbox folders">
 
-                              {listParticipants}
+                                  {listParticipants}
 
-                            </List>
+                                </List>
 
-                            <Dialog fullWidth open={this.state.wantParticipant} onClose={() => {
-                                  this.handleInvite(false);
-                                }} 
-                                aria-labelledby="form-dialog-title">
-                                <DialogContent>
-                                  <TextField
-                                    required
-                                    id="outlined-multiline-flexible"
-                                    label="Name"
-                                    onChange={(e) => this.changeName(e)}
-                                    margin="normal"
-                                    variant="outlined"
-                                  />
-                                </DialogContent>
-                                <DialogActions>
-                                  <ButtonMaterialUI 
-                                    onClick={() => this.handleInvite(false)}
-                                    color="primary">
-                                    Cancel
-                                  </ButtonMaterialUI>
-                                  <ButtonMaterialUI onClick={() => 
-                                            {   
-                                                if(this.state.participantName) {
-                                                    this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
-                                                    this.handleInvite(false);
+                                <Dialog fullWidth open={this.state.wantParticipant} onClose={() => {
+                                      this.handleInvite(false);
+                                    }} 
+                                    aria-labelledby="form-dialog-title">
+                                    <DialogContent>
+                                      <TextField
+                                        required
+                                        id="outlined-multiline-flexible"
+                                        label="Name"
+                                        onChange={(e) => this.changeName(e)}
+                                        margin="normal"
+                                        variant="outlined"
+                                      />
+                                    </DialogContent>
+                                    <DialogActions>
+                                      <ButtonMaterialUI 
+                                        onClick={() => this.handleInvite(false)}
+                                        color="primary">
+                                        Cancel
+                                      </ButtonMaterialUI>
+                                      <ButtonMaterialUI onClick={() => 
+                                                {   
+                                                    if(this.state.participantName) {
+                                                        this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
+                                                        this.handleInvite(false);
+                                                    }
                                                 }
                                             }
-                                        }
-                                            color="primary"
-                                            variant="contained"
-                                            >
-                                    Enter
-                                  </ButtonMaterialUI>
-                                </DialogActions>
-                            </Dialog>
-                        </Centered>
-                    }
+                                                color="primary"
+                                                variant="contained"
+                                                >
+                                        Enter
+                                      </ButtonMaterialUI>
+                                    </DialogActions>
+                                </Dialog>
+                            </Centered>
+                        }
+                    </div>
                 }
                 </div>
             </div>
