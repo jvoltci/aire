@@ -41,6 +41,7 @@ import { green, red } from '@material-ui/core/colors';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
+import Chip from '@material-ui/core/Chip';
 
 
 
@@ -95,6 +96,7 @@ const initialState = {
             switchState: false,
             currentParticipantClickSerial: -1,
             warning: false,
+            disabledParticipants: {}
         }
 
 const Head = ({classes, handleHomeClick, toggleDialog, handleWarningClick, warning, onPage, switchPage }) => {
@@ -239,22 +241,26 @@ class Polle extends React.Component {
         this.setState({listParticipants: listSerials, onPage: 3}, 
             () => localStorage.setItem('poll', JSON.stringify(this.state)));
     }
-    handleInvite(inviteSwitch, e) {
-
-        if(e)
-            this.setState({wantParticipant: inviteSwitch, currentParticipantClickSerial: e.target.dataset.txt}, () =>  localStorage.setItem('poll', JSON.stringify(this.state)))
+    handleInvite(inviteSwitch, index) {
+        if(index >= 0)
+            this.setState({wantParticipant: 
+                inviteSwitch, participantName: '', 
+                currentParticipantClickSerial: index}, () =>  localStorage.setItem('poll', JSON.stringify(this.state)))
         else
-            this.setState({wantParticipant: inviteSwitch}, () => localStorage.setItem('poll', JSON.stringify(this.state)))
+            this.setState({wantParticipant: inviteSwitch, participantName: ''}, () => localStorage.setItem('poll', JSON.stringify(this.state)))
     }
     changeName(event) {
         this.setState({participantName: event.target.value})
     }
     disableCurrentParticipant(index) {
         const listSerials = this.state.listParticipants;
+        const disabledParticipants = this.state.disabledParticipants;
+        disabledParticipants[index] = this.state.participantName;
         for(let i = 0; i < this.state.totalParticipants; ++i)
-            if(index === i.toString()) 
+            if(index === i) 
                 listSerials[i] =  -1;
-        this.setState({listParticipants: listSerials}, () => localStorage.setItem('poll', JSON.stringify(this.state)));
+        this.setState({listParticipants: listSerials, 
+            disabledParticipants: disabledParticipants}, () => localStorage.setItem('poll', JSON.stringify(this.state)));
     }
     toggleSwitch() {
         this.setState({switchState: !this.state.switchState}, () => {
@@ -276,8 +282,8 @@ class Polle extends React.Component {
             if(serial === -1)
                 return(
                     <div key={i}>
-                        <ListItem disabled data-txt={i} onClick={(e) => this.handleInvite(true, e)} button>
-                            <ListItemText primary={i+1} />
+                        <ListItem disabled onClick={() => this.handleInvite(true, i)} button>
+                            <Chip label={`${i+1} | ${this.state.disabledParticipants[i]}`} color="primary" />
                         </ListItem>
                         <Divider />
                     </div>
@@ -285,8 +291,8 @@ class Polle extends React.Component {
             else
                 return(
                     <div key={i}>
-                        <ListItem data-txt={i} onClick={(e) => this.handleInvite(true, e)} button>
-                            <ListItemText primary={i+1} />
+                        <ListItem onClick={() => this.handleInvite(true, i)} button>
+                            <Chip label={i+1} color="primary" />
                         </ListItem>
                         <Divider />
                     </div>
@@ -304,7 +310,7 @@ class Polle extends React.Component {
                                 <span id="client-snackbar" className={this.props.classes.message}>
                                     <span>Q.{i+1} &nbsp;</span>
                                     {data}
-                                    <IconButton data-txt={i} onClick={(e) => this.removeItem("questionPolling", e.target.dataset.txt)} 
+                                    <IconButton onClick={() => this.removeItem("questionPolling", i)} 
                                         aria-label="delete" 
                                         className={this.props.classes.margin} size="small">
                                       <DeleteIcon id="trash" fontSize="small" />
@@ -432,7 +438,10 @@ class Polle extends React.Component {
                                     {/*Next Button on page 1*/}
                                     <Centered>
                                         <ButtonMaterialUI
-                                            onClick={() => this.switchPage(2)}
+                                            onClick={() => {
+                                                if(this.state.listQnP.length > 0)
+                                                    this.switchPage(2)
+                                            }}
                                             variant="contained" 
                                             color="primary" 
                                             className={this.props.classes.button}>
@@ -495,6 +504,7 @@ class Polle extends React.Component {
                             aria-labelledby="form-dialog-title">
                             <DialogContent>
                               <TextField
+                                required
                                 id="outlined-multiline-flexible"
                                 label="Name"
                                 onChange={(e) => this.changeName(e)}
@@ -509,10 +519,13 @@ class Polle extends React.Component {
                                 Cancel
                               </ButtonMaterialUI>
                               <ButtonMaterialUI onClick={() => 
-                                        {   /*Bug here in this.state.currentParticipantClickSerial, sometimes it gives undefined*/
-                                            this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
-                                            this.handleInvite(false);
-                                        }}
+                                        {   
+                                            if(this.state.participantName) {
+                                                this.disableCurrentParticipant(this.state.currentParticipantClickSerial);
+                                                this.handleInvite(false);
+                                            }
+                                        }
+                                    }
                                         color="primary"
                                         variant="contained"
                                         >

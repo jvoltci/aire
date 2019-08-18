@@ -81,7 +81,13 @@ class HomeI extends React.Component {
           <ButtonMaterialUI size="large" 
             color="primary" 
             variant="contained" 
-            onClick={() => this.props.handleRedirect(this.state.pseudonym, true)}>
+            onClick={() => 
+              {
+                if(this.state.pseudonym) {
+                  this.props.handleRedirect(this.state.pseudonym, true)
+                }
+              }
+            }>
             Lets Get Started
           </ButtonMaterialUI>
         </Centered>
