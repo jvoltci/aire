@@ -104,14 +104,13 @@ const Head = ({classes, handleHomeClick, toggleDialog, handleWarningClick, warni
         onPage ?
             <AppBar position="static">
                 <Toolbar>
-                    <Fab
-                        onClick={() => {handleHomeClick();}}
-                    >
-                        <HomeIcon 
-                            className={iconHover} 
-                            color="secondary" 
-                            style={{ fontSize: 30 }} />
-                    </Fab>
+                        <ButtonMaterialUI>
+                            <HomeIcon 
+                                onClick={() => handleHomeClick()}
+                                className={iconHover} 
+                                color="secondary" 
+                                style={{ fontSize: 30 }} />
+                        </ButtonMaterialUI>
                     <Dialog
                         open={warning}
                         TransitionComponent={Transition}
@@ -149,15 +148,15 @@ const Head = ({classes, handleHomeClick, toggleDialog, handleWarningClick, warni
                         &nbsp; aire
                     </Typography>
                     <Rightened>
-                        <Fab>
-                            <Grid item xs={8}>
-                                <ThreeSixtyIcon 
-                                    onClick={() => switchPage(onPage-1)}
-                                    color="secondary" 
-                                    className={icon}
-                                />
-                            </Grid>
-                        </Fab>
+                            <ButtonMaterialUI>
+                                <Grid item xs={8}>
+                                    <ThreeSixtyIcon 
+                                        onClick={() => switchPage(onPage-1)}
+                                        color="secondary" 
+                                        className={icon}
+                                    />
+                                </Grid>
+                            </ButtonMaterialUI>
                     </Rightened>
                 </Toolbar>
             </AppBar> : null
