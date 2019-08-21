@@ -1,17 +1,18 @@
 import React from 'react';
-import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 //import { createHashHistory } from 'history'
 
 import './App.css';
 import Home from './Components/Home/Home.jsx'
 import Poll from './Components/Poll/Poll.jsx'
+import LivePoll from './Components/Live/LivePoll.jsx'
 
 //import {styled} from 'baseui';
 
 const initialState = {
       pseudonym: 'flai',
       password: '',
-      redirect: false
+      onPage: 0,
     }
 
 class App extends React.Component {
@@ -31,28 +32,46 @@ class App extends React.Component {
   changePassword = (event) => {
     this.setState({password: event.target.value});     
   }
+  switchPage(pseudonym, pageSerial) {
+    if(pageSerial >= -1) {
+      this.setState({onPage: pageSerial}, 
+        () => localStorage.setItem('pseudonym', JSON.stringify(this.state)))
+    }
+  }
 
   handleRedirect(pseudonym, redirectSwitch) {
     this.setState({pseudonym: pseudonym}, () => {
-    this.setState({redirect: redirectSwitch}, () => localStorage.setItem('pseudonym', JSON.stringify(this.state)));
+    this.setState({redirect: redirectSwitch}, () => {
+      if(redirectSwitch !== -1)
+        localStorage.setItem('pseudonym', JSON.stringify(this.state));
+    });
     });
   }
-
   render() {
     return (
       <HashRouter>
         <Switch>
           <Route path='/' component={() => <Home 
             pseudonym={this.state.pseudonym}
-            redirect={this.state.redirect}
-            handleRedirect={this.handleRedirect.bind(this)}/>
+            onPage={this.state.onPage}
+            switchPage={this.switchPage.bind(this)}/>
           } exact/>
-          <Route path='/unique' component={() => {
-            if(this.state.redirect)
-              return <Poll initialState={initialState} pseudonym={this.state.pseudonym} handleRedirect={this.handleRedirect.bind(this)}/>
-            else
-              return <Redirect to={'/'} />
-          }} />
+          <Route path='/unique' component={() => 
+            <Poll 
+            switchPage={this.switchPage.bind(this)}
+            onPage={this.state.onPage}
+            initialState={initialState} 
+            pseudonym={this.state.pseudonym} 
+            />
+          } />
+          <Route path='/livepoll' component={
+            () => 
+            <LivePoll
+            switchPage={this.switchPage.bind(this)}
+            onPage={this.state.onPage}
+            />
+          } 
+          />
           <Route component={() => { return (<h1 style={{ color: 'red', textAlign: 'center', paddingTop: '40vh' }}>Error 404: Not Found!</h1>) }} />
         </Switch>
       </HashRouter>

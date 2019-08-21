@@ -8,6 +8,7 @@ import {Block} from 'baseui/block';
 import ButtonMaterialUI from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 const Centered = styled('div', {
   display: 'flex',
@@ -54,10 +55,14 @@ class HomeI extends React.Component {
     this.setState({pseudonym: event.target.value});     
   }
   render() {
-    if(this.props.redirect) return <Redirect to={'/unique'} />
+    if(this.props.onPage === 1) return <Redirect to={'/unique'} />
+    else if(this.props.onPage === -1) return <Redirect to={'/livepoll'} />
     return (
       <div id="home" className="container">
-      
+        <ButtonMaterialUI onClick={() => this.props.switchPage('', -1)}>
+            <AssignmentIcon
+                style={{ fontSize: 30, color: 'green' }} />
+        </ButtonMaterialUI>
         <h3 id="u1">
           <span id="u11">a</span>
           <span id="u12">i</span>
@@ -65,7 +70,7 @@ class HomeI extends React.Component {
           <span id="u14">e</span>
         </h3>
 
-        <React.Fragment className={this.props.classes.root} noValidate>
+        <div className={this.props.classes.root} noValidate>
           <ValidationTextField fullWidth
             onChange={(e) => this.changePseudonym(e)}
             className={this.props.classes.margin}
@@ -75,7 +80,7 @@ class HomeI extends React.Component {
             defaultValue={this.props.pseudonym}
             id="validation-outlined-input"
           />
-        </React.Fragment>
+        </div>
         <Centered>
           <Block paddingTop="300px" />
           <ButtonMaterialUI size="large" 
@@ -84,7 +89,7 @@ class HomeI extends React.Component {
             onClick={() => 
               {
                 if(this.state.pseudonym) {
-                  this.props.handleRedirect(this.state.pseudonym, true)
+                  this.props.switchPage(this.state.pseudonym, 1)
                 }
               }
             }>
@@ -97,10 +102,10 @@ class HomeI extends React.Component {
   }
 }
 
-const Home = ({handleRedirect, redirect, pseudonym}) => {
+const Home = ({switchPage, onPage, pseudonym}) => {
   const classes = useStyles();
   return(
-    <HomeI pseudonym={pseudonym} redirect={redirect} handleRedirect={handleRedirect} classes={classes} />
+    <HomeI onPage={onPage} pseudonym={pseudonym} switchPage={switchPage.bind(this)} classes={classes} />
   )
 }
 
