@@ -34,16 +34,6 @@ const ValidationTextField = withStyles({
   },
 })(TextField);
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-  },
-  margin: {
-    margin: theme.spacing(1),
-  },
-}));
-
 class HomeI extends React.Component {
   constructor() {
     super();
@@ -56,7 +46,7 @@ class HomeI extends React.Component {
   }
   render() {
     if(this.props.onPage === 1) return <Redirect to={'/unique'} />
-    else if(this.props.onPage === -1) return <Redirect to={'/livepoll'} />
+    else if(this.props.onPage === -1) return <Redirect to={'/live'} />
     return (
       <div id="home" className="container">
         <ButtonMaterialUI onClick={() => this.props.switchPage('', -1)}>
@@ -105,8 +95,26 @@ class HomeI extends React.Component {
 const Home = ({switchPage, onPage, pseudonym}) => {
   const classes = useStyles();
   return(
-    <HomeI onPage={onPage} pseudonym={pseudonym} switchPage={switchPage.bind(this)} classes={classes} />
+    <HomeI onPage={onPage} 
+    pseudonym={pseudonym} 
+    switchPage={switchPage.bind(this)} 
+    classes={classes} />
   )
 }
+
+const useStyles = makeStyles(theme => ({
+/*  root: {
+    width: '100%',
+    maxWidth: '360px',
+    backgroundColor: theme.palette.background.paper,
+  },*/
+  margin: {
+    margin: theme.spacing(1),
+  },
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+}));
 
 export default Home;

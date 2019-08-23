@@ -1,55 +1,223 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
 
-import useStyles, {Centered} from  '../useStyles.jsx';
+import {Block} from 'baseui/block';
+
+import LivePollHead from '../Head/LivePollHead.jsx';
+import LiveHead from '../Head/LiveHead.jsx';
+import ListPoll from './ListPoll/ListPoll.jsx';
+import LiveFeed from './LiveFeed.jsx';
+import MainSurvey from './MainSurvey/MainSurvey.jsx'
+import ParticipantsPortal from './ParticipantsPortal/ParticipantsPortal.jsx';
+import ParticipantsInvitation from './ParticipantsInvitation/ParticipantsInvitation.jsx'
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import ButtonMaterialUI from '@material-ui/core/Button';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import SvgIcon from '@material-ui/core/SvgIcon';
+import List from '@material-ui/core/List';
+import { makeStyles } from '@material-ui/core/styles';
+
+class LivePollE extends React.Component {
+	constructor() {
+		super();
+		this.state = {
+			pollResult: {},
+		}
+	}
+	handleRadio(e, i) {
+		const tempResult = this.state.pollResult;
+		tempResult[i] = e.target.value;
+		this.setState({pollResult: tempResult});
+	}
+	render() {
+		const {
+			classes,
+			currentParticipantClickSerial,
+			disableCurrentParticipant,
+			disabledParticipants,
+			handleHomeClick, 
+			handleInvite,
+			handleWarningClick, 
+			isAdmin,
+			listParticipants,
+			listQnP,
+			onPage,
+			participantNotify,
+			pseudonym, 
+			switchPage,
+			toggleDialog,
+			wantParticipant,
+			warning,
+		} = this.props;
+		if(onPage === 0) return <Redirect to={'/'} />
+
+		return(
+			<div>
+				{
+					onPage === -1 ?
+
+					<div>
+						<LivePollHead
+						onPage={onPage}
+						switchPage={switchPage.bind(this)}
+						/> 
+						
+			            <React.Fragment>
+			              <CssBaseline />
+			              <Container maxWidth="sm">
+			                <List component="nav" aria-label="main mailbox folders">
+			                    <Block paddingTop="50px" />
+
+			                        <ListPoll
+			                        switchPage={switchPage.bind(this)}
+			                        />
+
+			                    <Block paddingTop="50px" />
+			                </List>
+			              </Container>
+			            </React.Fragment>
+
+					</div> :
+
+					<div>
+						{
+							onPage === 3 ?
+
+							<div>
+
+								<LiveHead
+					            handleHomeClick={handleHomeClick.bind(this)}
+					            handleWarningClick={handleWarningClick.bind(this)}
+					            isAdmin={isAdmin}
+					            onPage={onPage}
+					            participantNotify={participantNotify}
+					            pseudonym={pseudonym}
+					            switchPage={switchPage.bind(this)}
+					            toggleDialog={toggleDialog.bind(this)}
+					            warning={warning}
+					            />
+
+					            <ParticipantsInvitation
+					            pseudonym={pseudonym}
+					            />
+
+							</div> :
+
+							<div>
+							{
+								onPage === 4 ?
+
+								<div>
+									<LivePollHead
+									onPage={onPage}
+									switchPage={switchPage.bind(this)}
+									/> 
+
+			                        <ParticipantsPortal
+			                        currentParticipantClickSerial={currentParticipantClickSerial}
+			                        disableCurrentParticipant={disableCurrentParticipant.bind(this)}
+			                        disabledParticipants={disabledParticipants}
+			                        handleInvite={handleInvite.bind(this)}
+			                        listParticipants={listParticipants}
+			                        wantParticipant={wantParticipant}
+			                        />
+								</div> :
+
+								<div>
 
 
-const HomeIcon = (props) => {
-  return (
-    <SvgIcon {...props}>
-      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-    </SvgIcon>
-  );
+									{
+										onPage === 5 ?
+
+										<MainSurvey 
+										handleRadio={this.handleRadio.bind(this)}
+										listQnP={listQnP}
+										onPage={onPage}
+										pseudonym={pseudonym}
+										switchPage={switchPage.bind(this)}
+										/> :
+
+										<LiveFeed 
+										classes={classes}
+										handleHomeClick={handleHomeClick.bind(this)}
+							            handleWarningClick={handleWarningClick.bind(this)}
+							            isAdmin={isAdmin}
+							            listQnP={listQnP}
+							            onPage={onPage}
+							            participantNotify={participantNotify}
+							            pseudonym={pseudonym}
+							            switchPage={switchPage.bind(this)}
+							            toggleDialog={toggleDialog.bind(this)}
+							            warning={warning}
+										/>									
+									}
+
+								</div>
+							}
+							</div>
+						}
+					</div>
+				}
+			</div>
+		)
+	}
 }
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(3),
+  },
+  group: {
+    margin: theme.spacing(1, 0),
+  },
+  message: {
+    display: 'flex',
+  },
+  snacker: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+}));
 
-const LivePoll = ({switchPage, onPage}) => {
+const LivePoll  = ({
+	currentParticipantClickSerial,
+	disableCurrentParticipant,
+	disabledParticipants,
+	handleHomeClick, 
+	handleInvite,
+	handleWarningClick, 
+	isAdmin,
+	listParticipants,
+	listQnP,
+	onPage,
+	participantNotify,
+	pseudonym, 
+	switchPage,
+	toggleDialog,
+	wantParticipant,
+	warning,
+}) => {
 	const classes = useStyles();
-	const {iconHover, title} = classes;
-
-	if(onPage === 0) return <Redirect to={'/'} />
-
 	return(
-		<div>
-			<AppBar position="static">
-                <Toolbar>
-	                    <Centered>
-	                    	<ButtonMaterialUI onClick={() => switchPage('', 0)}>
-		                        <HomeIcon 
-		                            className={iconHover} 
-		                            style={{ fontSize: 30, color:'#03fc98' }} />
-		                    </ButtonMaterialUI>
-	                    </Centered>
-	                <Typography variant="h6" className={title}>
-	                    &nbsp; aire
-	                </Typography>
-	            </Toolbar>
-	        </AppBar>
-
-	        <React.Fragment>
-		      <CssBaseline />
-		      <Container maxWidth="sm">
-		        <Typography component="div" style={{ backgroundColor: '#cfe8fc', height: '100vh' }} />
-		      </Container>
-		    </React.Fragment>
-		</div>
+		<LivePollE
+		classes={classes}
+		currentParticipantClickSerial={currentParticipantClickSerial}
+		disableCurrentParticipant={disableCurrentParticipant.bind(this)}
+		disabledParticipants={disabledParticipants}
+		handleHomeClick={handleHomeClick.bind(this)}
+		handleInvite={handleInvite.bind(this)}
+		handleWarningClick={handleWarningClick.bind(this)}
+		isAdmin={isAdmin}
+		listParticipants={listParticipants}
+		listQnP={listQnP}
+		onPage={onPage}
+		participantNotify={participantNotify}
+		pseudonym={pseudonym}
+		switchPage={switchPage.bind(this)}
+		toggleDialog={toggleDialog.bind(this)}
+		wantParticipant={wantParticipant}
+		warning={warning}
+		/>
 	)
 }
 
