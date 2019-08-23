@@ -56,6 +56,11 @@ const ListParticipants = () => {
                         >
                             <DoneOutlineIcon/>
                         </Icon>
+                        <Icon
+                        fontSize='large'
+                        style={{ color: 'white'}}
+                        >
+                        </Icon>
                     </ListItem>
                 </div>
             )

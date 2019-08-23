@@ -3,6 +3,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -55,7 +56,11 @@ const ListParticipants = () => {
                         >
                             <PersonAddDisabledIcon />
                         </IconButton>
-
+                        <Icon
+                        fontSize='large'
+                        style={{ color: 'white'}}
+                        >
+                        </Icon>
                         <IconButton 
                         aria-label="delete" 
                         size="small"
