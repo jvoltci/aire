@@ -41,9 +41,29 @@ class HomeI extends React.Component {
       pseudonym: 'flai'
     }
   }
-  changePseudonym = (event) => {
+  changePseudonym(event) {
     this.setState({pseudonym: event.target.value});     
   }
+  checkPseudonym() {
+    if(this.state.pseudonym) {
+
+      fetch('https://n-ivehement.herokuapp.com/pseudonym', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          pseudonym: this.state.pseudonym
+        })
+      })
+        .then(response => response.json())
+        .then(check => {
+          if(check.isAvailable)
+            return this.props.switchPage(this.state.pseudonym, 1)
+          else
+            return null;
+        })
+    }
+  }
+
   render() {
     if(this.props.onPage === 1) return <Redirect to={'/unique'} />
     else if(this.props.onPage === -1) return <Redirect to={'/live'} />
@@ -76,13 +96,8 @@ class HomeI extends React.Component {
           <ButtonMaterialUI size="large" 
             color="primary" 
             variant="contained" 
-            onClick={() => 
-              {
-                if(this.state.pseudonym) {
-                  this.props.switchPage(this.state.pseudonym, 1)
-                }
-              }
-            }>
+            onClick={() => this.checkPseudonym()}
+            >
             Lets Get Started
           </ButtonMaterialUI>
         </Centered>

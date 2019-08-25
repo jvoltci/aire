@@ -33,7 +33,6 @@ class LivePollE extends React.Component {
 			classes,
 			currentParticipantClickSerial,
 			disableCurrentParticipant,
-			disabledParticipants,
 			handleHomeClick, 
 			handleInvite,
 			handleWarningClick, 
@@ -42,6 +41,7 @@ class LivePollE extends React.Component {
 			listQnP,
 			onPage,
 			participantNotify,
+			polls,
 			pseudonym, 
 			switchPage,
 			toggleDialog,
@@ -68,6 +68,7 @@ class LivePollE extends React.Component {
 			                    <Block paddingTop="50px" />
 
 			                        <ListPoll
+			                        polls={polls}
 			                        switchPage={switchPage.bind(this)}
 			                        />
 
@@ -115,9 +116,10 @@ class LivePollE extends React.Component {
 			                        <ParticipantsPortal
 			                        currentParticipantClickSerial={currentParticipantClickSerial}
 			                        disableCurrentParticipant={disableCurrentParticipant.bind(this)}
-			                        disabledParticipants={disabledParticipants}
 			                        handleInvite={handleInvite.bind(this)}
 			                        listParticipants={listParticipants}
+			                        polls={polls}
+			                        pseudonym={pseudonym}
 			                        wantParticipant={wantParticipant}
 			                        />
 								</div> :
@@ -182,7 +184,6 @@ const useStyles = makeStyles(theme => ({
 const LivePoll  = ({
 	currentParticipantClickSerial,
 	disableCurrentParticipant,
-	disabledParticipants,
 	handleHomeClick, 
 	handleInvite,
 	handleWarningClick, 
@@ -191,6 +192,7 @@ const LivePoll  = ({
 	listQnP,
 	onPage,
 	participantNotify,
+	polls,
 	pseudonym, 
 	switchPage,
 	toggleDialog,
@@ -203,7 +205,6 @@ const LivePoll  = ({
 		classes={classes}
 		currentParticipantClickSerial={currentParticipantClickSerial}
 		disableCurrentParticipant={disableCurrentParticipant.bind(this)}
-		disabledParticipants={disabledParticipants}
 		handleHomeClick={handleHomeClick.bind(this)}
 		handleInvite={handleInvite.bind(this)}
 		handleWarningClick={handleWarningClick.bind(this)}
@@ -212,6 +213,7 @@ const LivePoll  = ({
 		listQnP={listQnP}
 		onPage={onPage}
 		participantNotify={participantNotify}
+		polls={polls}
 		pseudonym={pseudonym}
 		switchPage={switchPage.bind(this)}
 		toggleDialog={toggleDialog.bind(this)}

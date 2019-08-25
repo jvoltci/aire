@@ -28,7 +28,6 @@ class ParticipantsPortalE extends React.Component {
             classes,
             currentParticipantClickSerial,
             disableCurrentParticipant,
-            disabledParticipants,
             handleInvite,
             listParticipants,
             wantParticipant,
@@ -42,7 +41,6 @@ class ParticipantsPortalE extends React.Component {
                     <ListParticipants
                     listParticipants={listParticipants}
                     handleInvite={handleInvite.bind(this)}
-                    disabledParticipants={disabledParticipants}
                     />
 
                 </List>
@@ -79,7 +77,7 @@ class ParticipantsPortalE extends React.Component {
                                 color="primary"
                                 variant="contained"
                                 >
-                        Enter
+                        Register
                       </ButtonMaterialUI>
                     </DialogActions>
                 </Dialog>
@@ -99,7 +97,6 @@ const useStyles = makeStyles(theme => ({
 const ParticipantsPortal = ({
     currentParticipantClickSerial,
     disableCurrentParticipant,
-    disabledParticipants,
     handleInvite,
     listParticipants,
     wantParticipant,
@@ -110,7 +107,6 @@ const ParticipantsPortal = ({
         classes={classes}
         currentParticipantClickSerial={currentParticipantClickSerial}
         disableCurrentParticipant={disableCurrentParticipant.bind(this)}
-        disabledParticipants={disabledParticipants}
         handleInvite={handleInvite.bind(this)}
         listParticipants={listParticipants}
         wantParticipant={wantParticipant}

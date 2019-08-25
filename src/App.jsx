@@ -1,33 +1,30 @@
 import React from 'react';
 import { HashRouter, Route, Switch } from 'react-router-dom';
-//import { createHashHistory } from 'history'
+import io from 'socket.io-client';
+//import EventEmitter from 'eventemitter3';
 
 import './App.css';
 import Home from './Components/Home/Home.jsx';
 import Poll from './Components/Poll/Poll.jsx';
 import LivePoll from './Components/Live/LivePoll.jsx';
 
-//import {styled} from 'baseui';
 
 const initialState = {
       currentParticipantClickSerial: -1,
-      disabledParticipants: {},
       homeClick: false,
-      isAdmin: 1,
+      isAdmin: 0,
       isPrimaryOpen: false,
       isSecondaryOpen: false,
-      listParticipants: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 
-      listQnP: ["Do you like the name?", 
-        "Have you ever taken a survey?",
-        "Do you believe in Entanglement?", 
-        "Are you a god?"],
+      listParticipants: {}, 
+      listQnP: [],
       onPage: 0,
       participantName: '',
       participantNotify: false,
       password: '',
+      polls: [],
       pseudonym: 'flai',
       secureState: false,
-      totalParticipants: 11,
+      totalParticipants: 0,
       wantParticipant: false,
       warning: false,
     }
@@ -43,6 +40,21 @@ class App extends React.Component {
     else {
       this.state = JSON.parse(localStorage.getItem('airePoll'));
     }
+
+    this.socket = io('https://n-ivehement.herokuapp.com');
+    this.attachSocketListeners();
+  }
+
+  attachSocketListeners() {
+
+    this.socket.on('live polls', (polls) => {
+      this.setState({ polls: polls }, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
+    })
+
+    this.socket.on('update clientListParticipants', listParticipants => {
+      this.setState({listParticipants: listParticipants}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
+    })
+
   }
 
   changePassword(event) {
@@ -50,26 +62,31 @@ class App extends React.Component {
   }
 
   disableCurrentParticipant(index, name) {
-      const listSerials = this.state.listParticipants;
-      const disabledParticipants = this.state.disabledParticipants;
-      disabledParticipants[index] = name;
-      for(let i = 0; i < this.state.totalParticipants; ++i)
-          if(index === i)
-            listSerials[i] =  -1;
-      this.setState({listParticipants: listSerials, 
-          disabledParticipants: disabledParticipants}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
+      const listParticipants = this.state.listParticipants;
+      listParticipants[index] = name;
+      this.socket.emit('update serverListParticipants', {pseudonym: this.state.pseudonym, index: index, name: name})
+
+      this.setState({listParticipants: listParticipants}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
   }
   handleFinal(totalParticipants) {
       
-      const listSerials = [];
-      for(let i = 0; i < totalParticipants; ++i) {
-          listSerials.push(i)
-      }
-      this.setState({listParticipants: listSerials}, 
-          () => {
-              this.switchPage('', 6);
-              localStorage.setItem('airePoll', JSON.stringify(this.state));
-      });
+      fetch('https://n-ivehement.herokuapp.com/new', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          isSecure: this.state.secureState,
+          pseudonym: this.state.pseudonym,
+          questions: this.state.listQnP,
+          totalParticipants: totalParticipants,
+        })
+      })
+        .then(response => response.json())
+        .then(stat => {
+          this.setState({isAdmin: 1, totalParticipants: totalParticipants}, () => {
+            localStorage.setItem('airePoll', JSON.stringify(this.state));
+            this.switchPage('', 6);
+          })
+        })
   }
   handleHomeClick() {
       this.setState({warning: true}, () => {
@@ -92,11 +109,11 @@ class App extends React.Component {
     });
   }
   handleWarningClick() {
+      this.socket.emit('remove poll', this.state.pseudonym);
       this.switchPage('flai', 0);
-      this.setState({warning: false}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
+      this.setState({warning: false, listparticipants: {}}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
   }
   removeItem(surface, index) {
-      console.log(index);
       if(surface === "questionPolling") {
           let temp = this.state.listQnP;
           temp.splice(Number(index), 1);
@@ -105,6 +122,19 @@ class App extends React.Component {
   }
 
   switchPage(pseudonym, pageSerial) {
+    if(pageSerial === 4) {
+      fetch('https:n-ivehement.herokuapp.com/listparticipants', {
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          pseudonym: pseudonym
+        })
+      })
+        .then(response => response.json())
+        .then(list => {
+          this.setState({listParticipants: list}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
+        })
+    }
     if(pageSerial >= -1) {
       this.setState({pseudonym: (pseudonym?pseudonym:this.state.pseudonym), onPage: pageSerial}, 
         () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
@@ -191,6 +221,7 @@ class App extends React.Component {
             onPage={this.state.onPage}
             listQnP={this.state.listQnP}
             participantNotify={this.state.participantNotify}
+            polls={this.state.polls}
             pseudonym={this.state.pseudonym}
             switchPage={this.switchPage.bind(this)}
             toggleDialog={this.toggleDialog.bind(this)}

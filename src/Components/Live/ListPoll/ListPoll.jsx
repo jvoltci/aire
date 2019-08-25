@@ -7,38 +7,11 @@ import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import Typography from '@material-ui/core/Typography';
 
-const useStyles = makeStyles(theme => ({
-  margin: {
-    margin: theme.spacing(1),
-  },
-  extendedIcon: {
-    marginRight: theme.spacing(1),
-  },
-   padding: {
-    padding: theme.spacing(0, 2),
-  },
-}));
-
-const populate = {
-	dummyData: [
-	{
-		pseudonym: "flai",
-		isSecure: true,
-	},
-	{
-		pseudonym: "dejavu",
-		isSecure: false,
-	},
-	{
-		pseudonym: "samurai",
-		isSecure: false,
-	}
-	],
-}
-
-const ListPoll = ({switchPage}) => {
+const ListPoll = ({polls, switchPage}) => {
 	const classes = useStyles();
-	const data = populate.dummyData.map((unit, i) => {
+	if(!polls) return null;
+
+	const data = polls.map((unit, i) => {
 		return(
 			<ListItem key={i} >
 		            <SnackbarContent
@@ -57,14 +30,7 @@ const ListPoll = ({switchPage}) => {
 		              }
 		            />
 		            <Button 
-		            onClick={
-		            	() => {
-		            		if(unit.isSecure)
-		            			return switchPage(unit.pseudonym, 4)
-		            		else
-		            			return switchPage(unit.pseudonym, 5)
-		            	}
-		            }
+		            onClick={() => switchPage(unit.pseudonym, 4)}
 		            className={classes.margin} size="small">
 	                	Enter
 	                </Button>
@@ -73,5 +39,18 @@ const ListPoll = ({switchPage}) => {
 	})
 	return data;
 }
+
+const useStyles = makeStyles(theme => ({
+  margin: {
+    margin: theme.spacing(1),
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+   padding: {
+    padding: theme.spacing(0, 2),
+  },
+}));
+
 
 export default ListPoll;
