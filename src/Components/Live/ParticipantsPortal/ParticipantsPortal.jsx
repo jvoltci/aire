@@ -69,8 +69,8 @@ class ParticipantsPortalE extends React.Component {
                       <ButtonMaterialUI onClick={() => 
                                 {   
                                     if(this.state.tempParticipantName) {
-                                        disableCurrentParticipant(currentParticipantClickSerial, this.state.tempParticipantName);
                                         handleInvite(false);
+                                        disableCurrentParticipant(currentParticipantClickSerial, this.state.tempParticipantName);
                                     }
                                 }
                             }

@@ -30,7 +30,7 @@ const ListPoll = ({polls, switchPage}) => {
 		              }
 		            />
 		            <Button 
-		            onClick={() => switchPage(unit.pseudonym, 4)}
+		            onClick={() => switchPage(unit.pseudonym, 4, unit.isSecure)}
 		            className={classes.margin} size="small">
 	                	Enter
 	                </Button>

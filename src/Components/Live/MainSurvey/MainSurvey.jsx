@@ -10,12 +10,14 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const MainSurvey = ({
 	handleRadio,
+	handleSubmit,
 	listQnP,
 	onPage,
 	pseudonym,
 	switchPage,
 }) => {
 	const classes = useStyles();
+
 	return(
 		<div>
 			<LivePollHead
@@ -34,7 +36,7 @@ const MainSurvey = ({
 
 			<Centered>
                 <Button
-                    onClick={() => switchPage('', 6)}
+                    onClick={() => handleSubmit()}
                     variant="contained" 
                     color="primary" 
                     className={classes.button}>

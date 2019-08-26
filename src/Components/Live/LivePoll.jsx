@@ -17,16 +17,28 @@ import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 
 class LivePollE extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			pollResult: {},
 		}
+		this.props.socket.on('update pollResult', pollResult => {
+			this.setState({pollResult: this.state.pollResult})
+		})
 	}
 	handleRadio(e, i) {
 		const tempResult = this.state.pollResult;
 		tempResult[i] = e.target.value;
 		this.setState({pollResult: tempResult});
+	}
+	handleSubmit() {
+		if(this.props.pollResult.keys.length === this.props.listQnP.length) {
+			this.props.socket.emit('update pollResult', {
+				pollResult: this.state.pollResult,
+				pseudonym: this.props.pseudonym
+			});
+			this.props.switchPage('', 6);
+		}
 	}
 	render() {
 		const {
@@ -132,6 +144,7 @@ class LivePollE extends React.Component {
 
 										<MainSurvey 
 										handleRadio={this.handleRadio.bind(this)}
+										handleSubmit={this.handleSubmit.bind(this)}
 										listQnP={listQnP}
 										onPage={onPage}
 										pseudonym={pseudonym}
