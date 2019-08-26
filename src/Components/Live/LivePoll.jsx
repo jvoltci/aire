@@ -22,23 +22,18 @@ class LivePollE extends React.Component {
 		this.state = {
 			pollResult: {},
 		}
-		this.props.socket.on('update pollResult', pollResult => {
+/*		this.props.socket.on('update pollResult', pollResult => {
 			this.setState({pollResult: this.state.pollResult})
-		})
+		})*/
+	}
+	handleInitialSubmit() {
+		if(Object.keys(this.state.pollResult).length > 0)
+			this.props.handleSubmit(this.state.pollResult);
 	}
 	handleRadio(e, i) {
 		const tempResult = this.state.pollResult;
 		tempResult[i] = e.target.value;
 		this.setState({pollResult: tempResult});
-	}
-	handleSubmit() {
-		if(this.props.pollResult.keys.length === this.props.listQnP.length) {
-			this.props.socket.emit('update pollResult', {
-				pollResult: this.state.pollResult,
-				pseudonym: this.props.pseudonym
-			});
-			this.props.switchPage('', 6);
-		}
 	}
 	render() {
 		const {
@@ -144,7 +139,7 @@ class LivePollE extends React.Component {
 
 										<MainSurvey 
 										handleRadio={this.handleRadio.bind(this)}
-										handleSubmit={this.handleSubmit.bind(this)}
+										handleInitialSubmit={this.handleInitialSubmit.bind(this)}
 										listQnP={listQnP}
 										onPage={onPage}
 										pseudonym={pseudonym}
@@ -199,6 +194,7 @@ const LivePoll  = ({
 	disableCurrentParticipant,
 	handleHomeClick, 
 	handleInvite,
+	handleSubmit,
 	handleWarningClick, 
 	isAdmin,
 	listParticipants,
@@ -220,6 +216,7 @@ const LivePoll  = ({
 		disableCurrentParticipant={disableCurrentParticipant.bind(this)}
 		handleHomeClick={handleHomeClick.bind(this)}
 		handleInvite={handleInvite.bind(this)}
+		handleSubmit={handleSubmit.bind(this)}
 		handleWarningClick={handleWarningClick.bind(this)}
 		isAdmin={isAdmin}
 		listParticipants={listParticipants}

@@ -22,6 +22,7 @@ const initialState = {
       participantNotify: false,
       password: '',
       polls: [],
+      pollResult: {},
       pseudonym: 'flai',
       secureState: false,
       totalParticipants: 0,
@@ -117,6 +118,13 @@ class App extends React.Component {
         else
             this.setState({wantParticipant: inviteSwitch, participantName: ''}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
       }
+  }
+  handleSubmit(pollResult) {
+    this.socket.emit('update pollResult', {
+      pollResult: pollResult,
+      pseudonym: this.state.pseudonym
+    });
+    this.switchPage('', 6);
   }
   handleRedirect(pseudonym, redirectSwitch) {
     this.setState({pseudonym: pseudonym}, () => {
@@ -235,6 +243,7 @@ class App extends React.Component {
             disabledParticipants={this.state.disabledParticipants}
             handleHomeClick={this.handleHomeClick.bind(this)}
             handleInvite={this.handleInvite.bind(this)}
+            handleSubmit={this.handleSubmit.bind(this)}
             handleWarningClick={this.handleWarningClick.bind(this)}
             isAdmin={this.state.isAdmin}
             listParticipants={this.state.listParticipants}
@@ -243,7 +252,6 @@ class App extends React.Component {
             participantNotify={this.state.participantNotify}
             polls={this.state.polls}
             pseudonym={this.state.pseudonym}
-            socket={this.socket}
             switchPage={this.switchPage.bind(this)}
             toggleDialog={this.toggleDialog.bind(this)}
             wantParticipant={this.state.wantParticipant}
