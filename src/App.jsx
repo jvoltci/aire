@@ -179,7 +179,7 @@ class App extends React.Component {
     if(pageSerial === 0) this.setState(initialState, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
     if(pageSerial === 4) {
       //this.socket.emit('list participants', pseudonym);
-      fetch('https:n-ivehement.herokuapp.com/listparticipants', {
+      fetch('https://n-ivehement.herokuapp.com/listparticipants', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
