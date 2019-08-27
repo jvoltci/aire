@@ -69,6 +69,9 @@ class App extends React.Component {
       const newPolls = Object.keys(polls);
       const idx = newPolls.indexOf(this.state.pseudonym);
       this.setState({ polls: polls, onPage: (idx===-1 && (this.state.onPage===4 || this.state.onPage===5 || this.state.onPage===6))?0:this.state.onPage }, () => {
+        if(this.state.onPage === 0) {
+          this.setState({pollResult: {}})
+        }
         localStorage.setItem('airePoll', JSON.stringify(this.state));
         //
       });
@@ -165,7 +168,12 @@ class App extends React.Component {
   }
   handleWarningClick() {
     this.switchPage('flai', 0);
-    this.socket.emit('unpoll', this.state.pseudonym);
+    this.setState({warning: false, liveFeedUpdate: {}}, () => {
+        localStorage.setItem('airePoll', JSON.stringify(this.state));
+    })
+    if(this.state.isAdmin) {
+      this.socket.emit('unpoll', this.state.pseudonym);
+    }
   }
   removeItem(surface, index) {
       if(surface === "questionPolling") {
@@ -176,7 +184,11 @@ class App extends React.Component {
   }
 
   switchPage(pseudonym, pageSerial, isSecure=false) {
-    if(pageSerial === 0) this.setState(initialState, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
+    /*if(pageSerial === 0) {
+      this.setState(initialState, () => {
+        localStorage.setItem('airePoll', JSON.stringify(this.state));
+      })
+    }*/
     if(pageSerial === 4) {
       //this.socket.emit('list participants', pseudonym);
       fetch('https://n-ivehement.herokuapp.com/listparticipants', {
