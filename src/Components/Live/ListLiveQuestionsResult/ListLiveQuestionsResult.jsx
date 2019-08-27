@@ -8,18 +8,18 @@ import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 
-const getRandomInt = (min, max) => {
+/*const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+}*/
 
-const initialState = () => ({
+const fillResult = ({yes, no}, total) => ({
   labels: [
     'Neutral',
     'Yes',
     'No'
   ],
   datasets: [{
-    data: [getRandomInt(50, 200), getRandomInt(100, 150), getRandomInt(150, 250)],
+    data: [total-(yes+no), yes, no],
     backgroundColor: [
     '#CCC',
     '#36A2EB',
@@ -34,12 +34,6 @@ const initialState = () => ({
 });
 
 class ListLiveQuestionsResultE extends React.Component {
-      constructor() {
-        super();
-        this.state = {
-          data: initialState
-        }
-      }
 
     render() {
       const lisLivetQnPResult = this.props.listQnP.map((data, i) => {
@@ -56,7 +50,13 @@ class ListLiveQuestionsResultE extends React.Component {
                                 }
                               />
                       </ListItem>
-                      <Doughnut data={this.state.data} />
+                      <Doughnut data={() => {
+                        if(this.props.liveFeedUpdate[i]) {
+                          return fillResult(this.props.liveFeedUpdate[i], this.props.total)
+                        }
+                        else
+                          return fillResult({yes: 0, no: 0}, this.props.totalParticipants)
+                      }} />
                       <Divider />
                   </Paper>
               )
@@ -80,12 +80,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ListLiveQuestionsResult = ({ listQnP }) => {
+const ListLiveQuestionsResult = ({ 
+  listQnP,
+  liveFeedUpdate,
+  total,
+  totalParticipants,
+}) => {
   const classes = useStyles();
   return(
     <ListLiveQuestionsResultE
     classes={classes}
     listQnP={listQnP}
+    liveFeedUpdate={liveFeedUpdate}
+    total={total}
+    totalParticipants={totalParticipants}
     />
   )
 }

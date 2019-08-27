@@ -42,16 +42,20 @@ class LivePollE extends React.Component {
 			disableCurrentParticipant,
 			handleHomeClick, 
 			handleInvite,
+			handleLiveFeed,
 			handleWarningClick, 
 			isAdmin,
 			listParticipants,
 			listQnP,
+			liveFeedUpdate,
 			onPage,
 			participantNotify,
 			polls,
 			pseudonym, 
 			switchPage,
 			toggleDialog,
+			total,
+			totalParticipants,
 			wantParticipant,
 			warning,
 		} = this.props;
@@ -149,14 +153,18 @@ class LivePollE extends React.Component {
 										<LiveFeed 
 										classes={classes}
 										handleHomeClick={handleHomeClick.bind(this)}
+										handleLiveFeed={handleLiveFeed.bind(this)}
 							            handleWarningClick={handleWarningClick.bind(this)}
 							            isAdmin={isAdmin}
 							            listQnP={listQnP}
+							            liveFeedUpdate={liveFeedUpdate}
 							            onPage={onPage}
 							            participantNotify={participantNotify}
 							            pseudonym={pseudonym}
 							            switchPage={switchPage.bind(this)}
 							            toggleDialog={toggleDialog.bind(this)}
+							            total={total}
+							            totalParticipants={totalParticipants}
 							            warning={warning}
 										/>									
 									}
@@ -194,17 +202,21 @@ const LivePoll  = ({
 	disableCurrentParticipant,
 	handleHomeClick, 
 	handleInvite,
+	handleLiveFeed,
 	handleSubmit,
 	handleWarningClick, 
 	isAdmin,
 	listParticipants,
 	listQnP,
+	liveFeedUpdate,
 	onPage,
 	participantNotify,
 	polls,
 	pseudonym, 
 	switchPage,
 	toggleDialog,
+	total,
+	totalParticipants,
 	wantParticipant,
 	warning,
 }) => {
@@ -216,17 +228,21 @@ const LivePoll  = ({
 		disableCurrentParticipant={disableCurrentParticipant.bind(this)}
 		handleHomeClick={handleHomeClick.bind(this)}
 		handleInvite={handleInvite.bind(this)}
+		handleLiveFeed={handleLiveFeed.bind(this)}
 		handleSubmit={handleSubmit.bind(this)}
 		handleWarningClick={handleWarningClick.bind(this)}
 		isAdmin={isAdmin}
 		listParticipants={listParticipants}
 		listQnP={listQnP}
+		liveFeedUpdate={liveFeedUpdate}
 		onPage={onPage}
 		participantNotify={participantNotify}
 		polls={polls}
 		pseudonym={pseudonym}
 		switchPage={switchPage.bind(this)}
 		toggleDialog={toggleDialog.bind(this)}
+		total={total}
+		totalParticipants={totalParticipants}
 		wantParticipant={wantParticipant}
 		warning={warning}
 		/>

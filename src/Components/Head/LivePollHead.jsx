@@ -1,9 +1,11 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
+import {Centered} from  '../Styles.jsx';
 
 import Typography from '@material-ui/core/Typography';
 import ButtonMaterialUI from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
+import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { makeStyles } from '@material-ui/core/styles';
@@ -39,6 +41,14 @@ const LivePollHead = ({
                     </Typography>
                 </Toolbar>
             </AppBar>
+            <Paper>
+              
+                <Typography variant="h6" className={classes.title}>
+                  <Centered>
+                     Live Polls
+                  </Centered>
+                </Typography>
+            </Paper>
         </div>
     )
 }

@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const MainSurvey = ({
 	handleRadio,
-	handleSubmit,
+	handleInitialSubmit,
 	listQnP,
 	onPage,
 	pseudonym,
@@ -36,7 +36,7 @@ const MainSurvey = ({
 
 			<Centered>
                 <Button
-                    onClick={() => handleSubmit()}
+                    onClick={() => handleInitialSubmit()}
                     variant="contained" 
                     color="primary" 
                     className={classes.button}>

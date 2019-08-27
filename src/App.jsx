@@ -17,6 +17,7 @@ const initialState = {
       isSecondaryOpen: false,
       listParticipants: {}, 
       listQnP: [],
+      liveFeedUpdate: {},
       onPage: 0,
       participantName: '',
       participantNotify: false,
@@ -26,6 +27,7 @@ const initialState = {
       pseudonym: 'flai',
       secureState: false,
       totalParticipants: 0,
+      total: 0,
       wantParticipant: false,
       warning: false,
     }
@@ -34,6 +36,8 @@ class App extends React.Component {
 
   constructor() {
     super();
+    //this.EventEmitter = new EventEmitter();
+
     if(!localStorage.getItem('airePoll')) {
       localStorage.setItem('airePoll', JSON.stringify(initialState))
       this.state = initialState;
@@ -41,17 +45,33 @@ class App extends React.Component {
     else {
       this.state = JSON.parse(localStorage.getItem('airePoll'));
     }
+  }
 
+  componentDidMount() {
     this.socket = io('https://n-ivehement.herokuapp.com');
     this.attachSocketListeners();
+    this.socket.emit('add user', 'flai');
+    //this.EventEmitter.emit('add user', Math.random().toString(36).substring(7));
+  }
+  componentWillUnmount() {
+    this.socket.emit('forceDisconnect');
+  }
+  attachViewListeners() {
+    //this.EventEmitter.on('add user', username => this.handleAddUser(username));
   }
 
   attachSocketListeners() {
 
+    this.socket.on('fill live feed', data => {
+      this.setState({liveFeedUpdate: data.update, total: data.total})
+    })
     this.socket.on('live polls', (polls) => {
-      const newPolls = polls.map(unit => unit.pseudonym);
+      const newPolls = Object.keys(polls);
       const idx = newPolls.indexOf(this.state.pseudonym);
-      this.setState({ polls: polls, onPage: (idx===-1 && this.state.onPage===4)?0:this.state.onPage }, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
+      this.setState({ polls: polls, onPage: (idx===-1 && (this.state.onPage===4 || this.state.onPage===5 || this.state.onPage===6))?0:this.state.onPage }, () => {
+        localStorage.setItem('airePoll', JSON.stringify(this.state));
+        //
+      });
     })
 
     this.socket.on('update clientListParticipants', listParticipants => {
@@ -84,24 +104,18 @@ class App extends React.Component {
           })
         this.switchPage(this.state.pseudonym, 5);
       }
+      else
+        this.switchPage(this.state.pseudonym, 5);
   }
   handleFinal(totalParticipants) {
-      
-      fetch('https://n-ivehement.herokuapp.com/new', {
-        method: 'post',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          isSecure: this.state.secureState,
-          pseudonym: this.state.pseudonym,
-          questions: this.state.listQnP,
-          totalParticipants: totalParticipants,
-        })
-      })
-        .then(response => response.json())
-        .then(stat => {
-          this.setState({isAdmin: 1, totalParticipants: totalParticipants}, () => {
-            localStorage.setItem('airePoll', JSON.stringify(this.state));
-            this.switchPage('', 6);
+    this.setState({isAdmin: 1, totalParticipants: totalParticipants}, () => {
+          localStorage.setItem('airePoll', JSON.stringify(this.state));
+          this.switchPage('', 6);
+          this.socket.emit('le poll', {
+            isSecure: this.state.secureState,
+            pseudonym: this.state.pseudonym,
+            questions: this.state.listQnP,
+            totalParticipants: totalParticipants,
           })
         })
   }
@@ -119,6 +133,21 @@ class App extends React.Component {
             this.setState({wantParticipant: inviteSwitch, participantName: ''}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
       }
   }
+  handleLiveFeed(pseudonym) {
+    if(!this.state.liveFeedUpdate) {
+      fetch('https://n-ivehement.herokuapp.com/fetchlivefeed', {
+      method: 'post',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        pseudonym: pseudonym
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.setState({liveFeedUpdate: data.update, total: data.total}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
+      })
+    }
+  }
   handleSubmit(pollResult) {
     this.socket.emit('update pollResult', {
       pollResult: pollResult,
@@ -135,9 +164,8 @@ class App extends React.Component {
     });
   }
   handleWarningClick() {
-      this.socket.emit('remove poll', this.state.pseudonym);
-      this.switchPage('flai', 0);
-      this.setState({warning: false, listparticipants: {}}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
+    this.switchPage('flai', 0);
+    this.socket.emit('unpoll', this.state.pseudonym);
   }
   removeItem(surface, index) {
       if(surface === "questionPolling") {
@@ -148,7 +176,9 @@ class App extends React.Component {
   }
 
   switchPage(pseudonym, pageSerial, isSecure=false) {
+    if(pageSerial === 0) this.setState(initialState, () => localStorage.setItem('airePoll', JSON.stringify(this.state)))
     if(pageSerial === 4) {
+      //this.socket.emit('list participants', pseudonym);
       fetch('https:n-ivehement.herokuapp.com/listparticipants', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -158,7 +188,7 @@ class App extends React.Component {
       })
         .then(response => response.json())
         .then(list => {
-          this.setState({listParticipants: list, pseudonym: pseudonym, secureState: isSecure}, () => {
+          this.setState({listParticipants: list}, () => {
             localStorage.setItem('airePoll', JSON.stringify(this.state));
           })
         })
@@ -243,17 +273,21 @@ class App extends React.Component {
             disabledParticipants={this.state.disabledParticipants}
             handleHomeClick={this.handleHomeClick.bind(this)}
             handleInvite={this.handleInvite.bind(this)}
+            handleLiveFeed={this.handleLiveFeed.bind(this)}
             handleSubmit={this.handleSubmit.bind(this)}
             handleWarningClick={this.handleWarningClick.bind(this)}
             isAdmin={this.state.isAdmin}
             listParticipants={this.state.listParticipants}
             onPage={this.state.onPage}
             listQnP={this.state.listQnP}
+            liveFeedUpdate={this.state.liveFeedUpdate}
             participantNotify={this.state.participantNotify}
             polls={this.state.polls}
             pseudonym={this.state.pseudonym}
             switchPage={this.switchPage.bind(this)}
             toggleDialog={this.toggleDialog.bind(this)}
+            total={this.state.total}
+            totalParticipants={this.state.totalParticipants}
             wantParticipant={this.state.wantParticipant}
             warning={this.state.warning}
             />

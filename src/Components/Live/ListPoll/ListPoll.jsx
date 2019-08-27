@@ -11,26 +11,27 @@ const ListPoll = ({polls, switchPage}) => {
 	const classes = useStyles();
 	if(!polls) return null;
 
-	const data = polls.map((unit, i) => {
+	const data = Object.keys(polls).map((pseudonym, i) => {
 		return(
 			<ListItem key={i} >
 		            <SnackbarContent
+		            className={classes.snacker}
 		              aria-describedby="client-snackbar"
 		              message={
 		                <Badge 
 		                className={classes.margin}
-		                invisible={!unit.isSecure}
+		                invisible={!polls[pseudonym]}
 		                color='secondary'
 		                variant="dot" 
 		                >
 					        <Typography className={classes.padding}>
-					        {unit.pseudonym}
+					        {pseudonym}
 					        </Typography>
 					    </Badge>
 		              }
 		            />
 		            <Button 
-		            onClick={() => switchPage(unit.pseudonym, 4, unit.isSecure)}
+		            onClick={() => switchPage(pseudonym, 4, polls[pseudonym])}
 		            className={classes.margin} size="small">
 	                	Enter
 	                </Button>
@@ -50,6 +51,9 @@ const useStyles = makeStyles(theme => ({
    padding: {
     padding: theme.spacing(0, 2),
   },
+  snacker: {
+  	backgroundColor: '#16c73f',
+  }
 }));
 
 

@@ -11,6 +11,11 @@ import Paper from '@material-ui/core/Paper';
 
 class LiveFeed extends React.Component {
 
+    componentDidMount() {
+        //if(this.props.onPage === 0) this.props.switchPage(this.props.pseudonym, 0)
+        this.props.handleLiveFeed(this.props.pseudonym);
+    }
+
     render() {
         
 
@@ -35,6 +40,9 @@ class LiveFeed extends React.Component {
 
             <ListLiveQuestionsResult 
             listQnP={this.props.listQnP}
+            liveFeedUpdate={this.props.liveFeedUpdate}
+            total={this.props.total}
+            totalParticipants={this.props.totalParticipants}
             />
             
           </Paper>
