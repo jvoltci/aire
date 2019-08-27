@@ -188,7 +188,7 @@ class App extends React.Component {
       })
         .then(response => response.json())
         .then(list => {
-          this.setState({listParticipants: list}, () => {
+          this.setState({listParticipants: list, pseudonym: pseudonym}, () => {
             localStorage.setItem('airePoll', JSON.stringify(this.state));
           })
         })
