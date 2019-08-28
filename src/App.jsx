@@ -168,7 +168,7 @@ class App extends React.Component {
   }
   handleWarningClick() {
     this.switchPage('flai', 0);
-    this.setState({warning: false, liveFeedUpdate: {}}, () => {
+    this.setState({warning: false, isAdmin: 0, liveFeedUpdate: {}}, () => {
         localStorage.setItem('airePoll', JSON.stringify(this.state));
     })
     if(this.state.isAdmin) {
