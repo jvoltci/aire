@@ -69,17 +69,23 @@ const PositiveHead = ({ participantNotify, handleHomeClick, toggleDialog, handle
                 <Typography variant="h6" className={classes.title}>
                     &nbsp; aire
                 </Typography>
-                <ButtonMaterialUI onClick={() => {
-                    if(onPage !== 1)
-                        switchPage('', onPage-1)
-                }}>
-                    <Grid item xs={8}>
-                        <ThreeSixtyIcon 
-                            className={classes.icon}
-                            style={{color:'#03fc98'}}
-                        />
-                    </Grid>
-                </ButtonMaterialUI>
+                {
+                    onPage === 2?
+
+                    <ButtonMaterialUI onClick={() => {
+                        if(onPage !== 1)
+                            switchPage('', onPage-1)
+                    }}>
+                        <Grid item xs={8}>
+                            <ThreeSixtyIcon 
+                                className={classes.icon}
+                                style={{color:'#03fc98'}}
+                            />
+                        </Grid>
+                    </ButtonMaterialUI> :
+
+                    null
+                }
             </Toolbar>
         </AppBar>
     )
