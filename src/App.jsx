@@ -93,7 +93,7 @@ class App extends React.Component {
       this.socket.emit('update serverListParticipants', {pseudonym: this.state.pseudonym, index: index, name: name})
 
       this.setState({listParticipants: listParticipants}, () => localStorage.setItem('airePoll', JSON.stringify(this.state)));
-      if(!this.state.secureState) {
+      if(true) {
         fetch('https://n-ivehement.herokuapp.com/fetchq', {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
@@ -184,11 +184,11 @@ class App extends React.Component {
   }
 
   switchPage(pseudonym, pageSerial, isSecure=false) {
-    /*if(pageSerial === 0) {
-      this.setState(initialState, () => {
+    if(pageSerial === 0) {
+      this.setState({liveFeedUpdate: {}}, () => {
         localStorage.setItem('airePoll', JSON.stringify(this.state));
       })
-    }*/
+    }
     if(pageSerial === 4) {
       //this.socket.emit('list participants', pseudonym);
       fetch('https://n-ivehement.herokuapp.com/listparticipants', {
