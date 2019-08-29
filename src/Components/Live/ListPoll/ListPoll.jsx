@@ -1,5 +1,7 @@
 import React from 'react';
 
+
+
 import ListItem from '@material-ui/core/ListItem';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,11 +32,13 @@ const ListPoll = ({polls, switchPage}) => {
 					    </Badge>
 		              }
 		            />
-		            <Button 
+		            <Button
 		            onClick={() => switchPage(pseudonym, 4, polls[pseudonym])}
 		            className={classes.margin} size="small">
 	                	Enter
 	                </Button>
+
+
 		    </ListItem>
 		)
 	})

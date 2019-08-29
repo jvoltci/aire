@@ -10,6 +10,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import TextField from '@material-ui/core/TextField';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 const ValidationTextField = withStyles({
@@ -33,7 +34,9 @@ class HomeI extends React.Component {
   constructor() {
     super();
     this.state = {
-      pseudonym: 'flai'
+      pseudonym: 'flai',
+      inProgress: false,
+      isDisable: false,
     }
   }
   changePseudonym(event) {
@@ -41,7 +44,7 @@ class HomeI extends React.Component {
   }
   checkPseudonym() {
     if(this.state.pseudonym) {
-
+      this.setState({inProgress: true, isDisable: true});
       fetch('https://n-ivehement.herokuapp.com/pseudonym', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -51,11 +54,15 @@ class HomeI extends React.Component {
       })
         .then(response => response.json())
         .then(check => {
-          if(check.isAvailable)
-            return this.props.switchPage(this.state.pseudonym, 1)
-          else
-            return null;
-        })
+            let flag = 0;
+            this.setState({inProgress: false, isDisable: false}, () => {
+              if(check.isAvailable)
+                flag = 1;
+            })
+            if(flag)
+              return this.props.switchPage(this.state.pseudonym, 1)
+          }
+        )
     }
   }
 
@@ -67,15 +74,20 @@ class HomeI extends React.Component {
         <ButtonMaterialUI onClick={() => this.props.switchPage('', -1)}>
             <AssignmentIcon
                 style={{ fontSize: 30, color: 'green' }} />
+                
             
         </ButtonMaterialUI>
+
         <Rightened>
+        <ButtonMaterialUI>
+        
           <a style={{display: "table-cell"}}  rel="noopener noreferrer" href="https://github.com/jvoltci/aire/blob/master/README.md" target="_blank">
-            <ButtonMaterialUI >
               <ErrorOutlineIcon/>
-            </ButtonMaterialUI>
           </a>
+        
+        </ButtonMaterialUI>
         </Rightened>
+
         <h3 id="u1">
           <span id="u11">a</span>
           <span id="u12">i</span>
@@ -94,9 +106,11 @@ class HomeI extends React.Component {
             id="validation-outlined-input"
           />
         </div>
+
         <Centered>
-          <Block paddingTop="300px" />
+          <Block paddingTop="210px" />
           <ButtonMaterialUI size="large" 
+            disabled={this.state.isDisable}
             color="primary" 
             variant="contained" 
             onClick={() => this.checkPseudonym()}
@@ -104,6 +118,19 @@ class HomeI extends React.Component {
             Lets Get Started
           </ButtonMaterialUI>
         </Centered>
+        <Block />
+        {
+            this.state.inProgress ?
+
+            
+              <Centered>
+                <CircularProgress className={this.props.classes.progress} />
+              </Centered>
+             :
+
+            null
+          }
+        
 
       </div>
     );
@@ -132,6 +159,9 @@ const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     flexWrap: 'wrap',
+  },
+  progress: {
+    margin: theme.spacing(2),
   },
 }));
 
