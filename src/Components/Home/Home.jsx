@@ -1,21 +1,16 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
 import './Home.css';
+import {Centered, Rightened} from  '../Styles.jsx';
 
-import {styled} from 'baseui';
 import {Block} from 'baseui/block';
 
 import ButtonMaterialUI from '@material-ui/core/Button';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import TextField from '@material-ui/core/TextField';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 
-const Centered = styled('div', {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  height: '100%',
-});
 
 const ValidationTextField = withStyles({
   root: {
@@ -72,7 +67,15 @@ class HomeI extends React.Component {
         <ButtonMaterialUI onClick={() => this.props.switchPage('', -1)}>
             <AssignmentIcon
                 style={{ fontSize: 30, color: 'green' }} />
+            
         </ButtonMaterialUI>
+        <Rightened>
+          <a style={{display: "table-cell"}}  rel="noopener noreferrer" href="https://github.com/jvoltci/aire/blob/master/README.md" target="_blank">
+            <ButtonMaterialUI >
+              <ErrorOutlineIcon/>
+            </ButtonMaterialUI>
+          </a>
+        </Rightened>
         <h3 id="u1">
           <span id="u11">a</span>
           <span id="u12">i</span>
