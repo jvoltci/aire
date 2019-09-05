@@ -15,7 +15,7 @@ const Notification = ({participantNotify, switchPage}) => {
   	const classes = useStyles();
 	return(
 		<ButtonMaterialUI
-		onClick={() => switchPage('', 3)}
+		onClick={() => switchPage(3)}
 		>
 			<Badge color="secondary" className={classes.margin} invisible={participantNotify} variant="dot">
 	          <AccountCircleIcon 

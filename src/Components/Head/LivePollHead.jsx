@@ -19,10 +19,7 @@ const HomeIcon = (props) => {
   );
 }
 
-const LivePollHead = ({
-    onPage,
-    switchPage,
-}) => {
+const LivePollHead = ({onPage, switchPage}) => {
     const classes = useStyles();
 
     if(onPage === 0) return <Redirect to={'/'} />
@@ -31,7 +28,7 @@ const LivePollHead = ({
         <div>
             <AppBar position="static">
                 <Toolbar>
-                        <ButtonMaterialUI onClick={() => switchPage('', 0)}>
+                        <ButtonMaterialUI onClick={() => switchPage(0)}>
                             <HomeIcon 
                                 className={classes.iconHover} 
                                 style={{ fontSize: 30, color:'#03fc98' }} />

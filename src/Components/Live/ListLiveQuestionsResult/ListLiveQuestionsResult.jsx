@@ -80,12 +80,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ListLiveQuestionsResult = ({ 
-  listQnP,
-  liveFeedUpdate,
-  total,
-  totalParticipants,
-}) => {
+const ListLiveQuestionsResult = ({ listQnP, liveFeedUpdate, total, totalParticipants}) => {
   const classes = useStyles();
   return(
     <ListLiveQuestionsResultE

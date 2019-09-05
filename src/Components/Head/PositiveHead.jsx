@@ -23,7 +23,7 @@ const HomeIcon = (props) => {
   );
 }
 
-const PositiveHead = ({ participantNotify, handleHomeClick, toggleDialog, handleWarningClick, warning, onPage, switchPage }) => {
+const PositiveHead = ({ participantNotify, handleHomeClick, toggleDialog, warnClick, warning, onPage, switchPage }) => {
     const classes = useStyles();
     return(
         <AppBar position="static">
@@ -54,7 +54,7 @@ const PositiveHead = ({ participantNotify, handleHomeClick, toggleDialog, handle
                         </ButtonMaterialUI>
                         <ButtonMaterialUI
                         onClick={() => {
-                          handleWarningClick();
+                          warnClick();
                         }}
                         color="secondary"
                         variant="contained"
@@ -74,7 +74,7 @@ const PositiveHead = ({ participantNotify, handleHomeClick, toggleDialog, handle
 
                     <ButtonMaterialUI onClick={() => {
                         if(onPage !== 1)
-                            switchPage('', onPage-1)
+                            switchPage(onPage-1)
                     }}>
                         <Grid item xs={8}>
                             <ThreeSixtyIcon 

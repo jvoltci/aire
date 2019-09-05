@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import Badge from '@material-ui/core/Badge';
 import Typography from '@material-ui/core/Typography';
 
-const ListPoll = ({polls, switchPage}) => {
+const ListPoll = ({polls, switchPage, updatePseudonym, updateParticipants}) => {
 	const classes = useStyles();
 	if(!polls) return null;
 
@@ -33,7 +33,22 @@ const ListPoll = ({polls, switchPage}) => {
 		              }
 		            />
 		            <Button
-		            onClick={() => switchPage(pseudonym, 4, polls[pseudonym])}
+		            onClick={() => {
+		            	fetch('https://n-ivehement.herokuapp.com/listparticipants', {
+				        method: 'post',
+				        headers: {'Content-Type': 'application/json'},
+				        body: JSON.stringify({
+				          pseudonym: pseudonym
+				        })
+				      })
+				        .then(response => response.json())
+				        .then(list => {
+				        	updatePseudonym(pseudonym);
+				        	updateParticipants(list);
+
+				        	if(list) switchPage(4);
+				        })
+		            }}
 		            className={classes.margin} size="small">
 	                	Enter
 	                </Button>

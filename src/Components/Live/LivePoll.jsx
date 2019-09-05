@@ -1,5 +1,8 @@
 import React from 'react';
 import {Redirect} from 'react-router-dom';
+import { connect } from "react-redux";
+import Socket from '../../redux/Socket';
+import {submit, switchPage, handleHomeClick, warnClick, toggleDialog, updateInvite, updateQ, updatePseudonym, updateParticipants} from '../../redux/actions';
 
 import {Block} from 'baseui/block';
 
@@ -16,169 +19,6 @@ import Container from '@material-ui/core/Container';
 import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 
-class LivePollE extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			pollResult: {},
-		}
-/*		this.props.socket.on('update pollResult', pollResult => {
-			this.setState({pollResult: this.state.pollResult})
-		})*/
-	}
-	handleInitialSubmit() {
-		if(Object.keys(this.state.pollResult).length > 0)
-			this.props.handleSubmit(this.state.pollResult);
-	}
-	handleRadio(e, i) {
-		const tempResult = this.state.pollResult;
-		tempResult[i] = e.target.value;
-		this.setState({pollResult: tempResult});
-	}
-	render() {
-		const {
-			classes,
-			currentParticipantClickSerial,
-			disableCurrentParticipant,
-			handleHomeClick, 
-			handleInvite,
-			handleLiveFeed,
-			handleWarningClick, 
-			isAdmin,
-			listParticipants,
-			listQnP,
-			liveFeedUpdate,
-			onPage,
-			participantNotify,
-			polls,
-			pseudonym, 
-			switchPage,
-			toggleDialog,
-			total,
-			totalParticipants,
-			wantParticipant,
-			warning,
-		} = this.props;
-		if(onPage === 0) return <Redirect to={'/'} />
-
-		return(
-			<div>
-				{
-					onPage === -1 ?
-
-					<div>
-						<LivePollHead
-						onPage={onPage}
-						switchPage={switchPage.bind(this)}
-						/> 
-						
-			            <React.Fragment>
-			              <CssBaseline />
-			              <Container maxWidth="sm">
-			                <List component="nav" aria-label="main mailbox folders">
-			                    <Block paddingTop="50px" />
-
-			                        <ListPoll
-			                        polls={polls}
-			                        switchPage={switchPage.bind(this)}
-			                        />
-
-			                    <Block paddingTop="50px" />
-			                </List>
-			              </Container>
-			            </React.Fragment>
-
-					</div> :
-
-					<div>
-						{
-							onPage === 3 ?
-
-							<div>
-
-								<LiveHead
-					            handleHomeClick={handleHomeClick.bind(this)}
-					            handleWarningClick={handleWarningClick.bind(this)}
-					            isAdmin={isAdmin}
-					            onPage={onPage}
-					            participantNotify={participantNotify}
-					            pseudonym={pseudonym}
-					            switchPage={switchPage.bind(this)}
-					            toggleDialog={toggleDialog.bind(this)}
-					            warning={warning}
-					            />
-
-					            <ParticipantsInvitation
-					            pseudonym={pseudonym}
-					            />
-
-							</div> :
-
-							<div>
-							{
-								onPage === 4 ?
-
-								<div>
-									<LivePollHead
-									onPage={onPage}
-									switchPage={switchPage.bind(this)}
-									/> 
-
-			                        <ParticipantsPortal
-			                        currentParticipantClickSerial={currentParticipantClickSerial}
-			                        disableCurrentParticipant={disableCurrentParticipant.bind(this)}
-			                        handleInvite={handleInvite.bind(this)}
-			                        listParticipants={listParticipants}
-			                        polls={polls}
-			                        pseudonym={pseudonym}
-			                        wantParticipant={wantParticipant}
-			                        />
-								</div> :
-
-								<div>
-
-
-									{
-										onPage === 5 ?
-
-										<MainSurvey 
-										handleRadio={this.handleRadio.bind(this)}
-										handleInitialSubmit={this.handleInitialSubmit.bind(this)}
-										listQnP={listQnP}
-										onPage={onPage}
-										pseudonym={pseudonym}
-										switchPage={switchPage.bind(this)}
-										/> :
-
-										<LiveFeed 
-										classes={classes}
-										handleHomeClick={handleHomeClick.bind(this)}
-										handleLiveFeed={handleLiveFeed.bind(this)}
-							            handleWarningClick={handleWarningClick.bind(this)}
-							            isAdmin={isAdmin}
-							            listQnP={listQnP}
-							            liveFeedUpdate={liveFeedUpdate}
-							            onPage={onPage}
-							            participantNotify={participantNotify}
-							            pseudonym={pseudonym}
-							            switchPage={switchPage.bind(this)}
-							            toggleDialog={toggleDialog.bind(this)}
-							            total={total}
-							            totalParticipants={totalParticipants}
-							            warning={warning}
-										/>									
-									}
-
-								</div>
-							}
-							</div>
-						}
-					</div>
-				}
-			</div>
-		)
-	}
-}
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(3),
@@ -197,56 +37,197 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const LivePoll  = ({
-	currentParticipantClickSerial,
-	disableCurrentParticipant,
-	handleHomeClick, 
-	handleInvite,
-	handleLiveFeed,
-	handleSubmit,
-	handleWarningClick, 
-	isAdmin,
-	listParticipants,
-	listQnP,
-	liveFeedUpdate,
-	onPage,
-	participantNotify,
-	polls,
-	pseudonym, 
-	switchPage,
-	toggleDialog,
-	total,
-	totalParticipants,
-	wantParticipant,
-	warning,
-}) => {
+
+class LivePollE extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			pollResult: {},
+		}
+	}
+	handleInitialSubmit() {
+		if(Object.keys(this.state.pollResult).length === this.props.listQnP.length) {
+			Socket.emit('update pollResult', {
+		      pollResult: this.state.pollResult,
+		      pseudonym: this.props.pseudonym
+		    });
+			this.props.submit(this.state.pollResult);
+			this.props.switchPage(6);
+		}
+	}
+	handleRadio(e, i) {
+		const tempResult = this.state.pollResult;
+		tempResult[i] = e.target.value;
+		this.setState({pollResult: tempResult});
+	}
+	render() {
+		if(this.props.onPage === 0) return <Redirect to={'/'} />
+		return(
+			<div>
+				{
+					this.props.onPage === -1 ?
+
+					<div>
+						<LivePollHead
+						onPage={this.props.onPage}
+						switchPage={this.props.switchPage}
+						/> 
+						
+			            <React.Fragment>
+			              <CssBaseline />
+			              <Container maxWidth="sm">
+			                <List component="nav" aria-label="main mailbox folders">
+			                    <Block paddingTop="50px" />
+
+			                        <ListPoll
+			                        polls={this.props.polls}
+			                        switchPage={this.props.switchPage}
+			                        updatePseudonym={this.props.updatePseudonym}
+			                        updateParticipants={this.props.updateParticipants}
+			                        />
+
+			                    <Block paddingTop="50px" />
+			                </List>
+			              </Container>
+			            </React.Fragment>
+
+					</div> :
+
+					<div>
+						{
+							this.props.onPage === 3 ?
+
+							<div>
+
+								<LiveHead
+					            handleHomeClick={this.props.handleHomeClick}
+					            warnClick={this.props.warnClick}
+					            isAdmin={this.props.isAdmin}
+					            onPage={this.props.onPage}
+					            participantNotify={this.props.participantNotify}
+					            pseudonym={this.props.pseudonym}
+					            switchPage={this.props.switchPage}
+					            toggleDialog={this.props.toggleDialog}
+					            warning={this.props.warning}
+					            />
+
+					            <ParticipantsInvitation
+					            pseudonym={this.props.pseudonym}
+					            />
+
+							</div> :
+
+							<div>
+							{
+								this.props.onPage === 4 ?
+
+								<div>
+									<LivePollHead
+									onPage={this.props.onPage}
+									switchPage={this.props.switchPage}
+									/> 
+
+			                        <ParticipantsPortal
+			                        currentParticipantClickSerial={this.props.currentParticipantClickSerial}
+			                        listParticipants={this.props.listParticipants}
+			                        pseudonym={this.props.pseudonym}
+			                        wantParticipant={this.props.wantParticipant}
+			                        switchPage={this.props.switchPage}
+			                        updateQ={this.props.updateQ}
+			                        updateInvite={this.props.updateInvite}
+			                        updateParticipants={this.props.updateParticipants}
+			                        />
+								</div> :
+
+								<div>
+
+
+									{
+										this.props.onPage === 5 ?
+
+										<MainSurvey 
+										handleRadio={this.handleRadio.bind(this)}
+										handleInitialSubmit={this.handleInitialSubmit.bind(this)}
+										listQnP={this.props.listQnP}
+										onPage={this.props.onPage}
+										pseudonym={this.props.pseudonym}
+										switchPage={this.props.switchPage}
+										/> :
+
+										<LiveFeed 
+										classes={this.props.classes}
+							            warnClick={this.props.warnClick}
+							            handleHomeClick={this.props.handleHomeClick}
+							            isAdmin={this.props.isAdmin}
+							            listQnP={this.props.listQnP}
+							            liveFeedUpdate={this.props.liveFeedUpdate}
+							            onPage={this.props.onPage}
+							            participantNotify={this.props.participantNotify}
+							            pseudonym={this.props.pseudonym}
+							            switchPage={this.props.switchPage}
+							            total={this.props.total}
+							            totalParticipants={this.props.totalParticipants}
+							            warning={this.props.warning}
+										/>									
+									}
+
+								</div>
+							}
+							</div>
+						}
+					</div>
+				}
+			</div>
+		)
+	}
+}
+
+const mapStateToProps = state => ({
+  ...state
+});
+
+const mapDispatchToProps = dispatch => ({
+  submit: (payload) => dispatch(submit(payload)),
+  switchPage: (payload) => dispatch(switchPage(payload)),
+  handleHomeClick: () => dispatch(handleHomeClick()),
+  warnClick: (payload) => dispatch(warnClick(payload)),
+  toggleDialog: (payload) => dispatch(toggleDialog(payload)),
+  updateQ: (payload) => dispatch(updateQ(payload)),
+  updateInvite: (want, idx) => dispatch(updateInvite(want, idx)),
+  updatePseudonym: (payload) => dispatch(updatePseudonym(payload)),
+  updateParticipants: (payload) => dispatch(updateParticipants(payload)),
+});
+
+const LivePoll = ({rootReducer, submit, switchPage, handleHomeClick, warnClick, toggleDialog, updateInvite, updateQ, updatePseudonym, updateParticipants}) => {
 	const classes = useStyles();
 	return(
 		<LivePollE
 		classes={classes}
-		currentParticipantClickSerial={currentParticipantClickSerial}
-		disableCurrentParticipant={disableCurrentParticipant.bind(this)}
-		handleHomeClick={handleHomeClick.bind(this)}
-		handleInvite={handleInvite.bind(this)}
-		handleLiveFeed={handleLiveFeed.bind(this)}
-		handleSubmit={handleSubmit.bind(this)}
-		handleWarningClick={handleWarningClick.bind(this)}
-		isAdmin={isAdmin}
-		listParticipants={listParticipants}
-		listQnP={listQnP}
-		liveFeedUpdate={liveFeedUpdate}
-		onPage={onPage}
-		participantNotify={participantNotify}
-		polls={polls}
-		pseudonym={pseudonym}
-		switchPage={switchPage.bind(this)}
-		toggleDialog={toggleDialog.bind(this)}
-		total={total}
-		totalParticipants={totalParticipants}
-		wantParticipant={wantParticipant}
-		warning={warning}
+		currentParticipantClickSerial={rootReducer.currentParticipantClickSerial}
+		pseudonym={rootReducer.pseudonym}
+		onPage={rootReducer.onPage}
+		polls={rootReducer.polls}
+		isAdmin={rootReducer.isAdmin}
+		listParticipants={rootReducer.listParticipants}
+		liveFeedUpdate={rootReducer.liveFeedUpdate}
+		participantNotify={rootReducer.participantNotify}
+		warning={rootReducer.warning}
+		listQnP={rootReducer.listQnP}
+		total={rootReducer.total}
+		totalParticipants={rootReducer.totalParticipants}
+		wantParticipant={rootReducer.wantParticipant}
+
+		submit={submit}
+		switchPage={switchPage}
+		handleHomeClick={handleHomeClick}
+		warnClick={warnClick}
+		toggleDialog={toggleDialog}
+		updateInvite={updateInvite}
+		updateQ={updateQ}
+		updatePseudonym={updatePseudonym}
+		updateParticipants={updateParticipants}
 		/>
 	)
 }
 
-export default LivePoll;
+export default connect(mapStateToProps, mapDispatchToProps)(LivePoll);

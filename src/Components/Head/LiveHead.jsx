@@ -25,7 +25,7 @@ const HomeIcon = (props) => {
 }
 
 
-const LiveHead = ({ isAdmin, participantNotify, handleHomeClick, toggleDialog, handleWarningClick, warning, onPage, switchPage }) => {
+const LiveHead = ({ isAdmin, participantNotify, handleHomeClick, toggleDialog, warnClick, warning, onPage, switchPage }) => {
     const classes = useStyles();
     return(
         <AppBar position="static">
@@ -56,7 +56,7 @@ const LiveHead = ({ isAdmin, participantNotify, handleHomeClick, toggleDialog, h
                         </ButtonMaterialUI>
                         <ButtonMaterialUI
                         onClick={() => {
-                          handleWarningClick();
+                          warnClick();
                         }}
                         color="secondary"
                         variant="contained"
@@ -78,11 +78,11 @@ const LiveHead = ({ isAdmin, participantNotify, handleHomeClick, toggleDialog, h
                                 {
                                     onPage === 6 ?
                                     <Notification
-                                    switchPage={switchPage.bind(this)}
+                                    switchPage={switchPage}
                                     participantNotify={participantNotify}
                                     /> :
                                     <ButtonMaterialUI onClick={() => {
-                                        switchPage('', 6)
+                                        switchPage(6)
                                     }}>
                                         <Grid item xs={8}>
                                             <ThreeSixtyIcon 

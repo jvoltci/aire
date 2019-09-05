@@ -35,12 +35,14 @@ class PrimaryDialog extends React.Component {
 		    >
 		    	<DialogActions>
 		    		<MuiThemeProvider theme={theme}>
+
 		    			<Button 
 			          	color="primary"
 			          	variant="contained"
 			          	>
 			            Question
 			          	</Button>
+
 			          	<Button
 			          	onClick={() => {
 			              this.props.toggleDialog("primary", false);
@@ -51,6 +53,7 @@ class PrimaryDialog extends React.Component {
 			            >
 			            Poll
 			          	</Button>
+			          	
     				</MuiThemeProvider>
 		        </DialogActions>
 		    </Dialog>

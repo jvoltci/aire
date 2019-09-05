@@ -13,7 +13,24 @@ class LiveFeed extends React.Component {
 
     componentDidMount() {
         //if(this.props.onPage === 0) this.props.switchPage(this.props.pseudonym, 0)
-        this.props.handleLiveFeed(this.props.pseudonym);
+        /*this.props.handleLiveFeed(this.props.pseudonym);*/
+        this.handleLiveFeed(this.props.pseudonym)
+    }
+
+    handleLiveFeed(pseudonym) {
+        if(!this.props.liveFeedUpdate) {
+          fetch('https://n-ivehement.herokuapp.com/fetchlivefeed', {
+          method: 'post',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            pseudonym: pseudonym
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            this.props.liveFeedUpdate(data);
+          })
+        }
     }
 
     render() {
@@ -23,14 +40,14 @@ class LiveFeed extends React.Component {
           <Paper>
 
             <LiveHead
-            handleHomeClick={this.props.handleHomeClick.bind(this)}
-            handleWarningClick={this.props.handleWarningClick.bind(this)}
+            handleHomeClick={this.props.handleHomeClick}
+            warnClick={this.props.warnClick}
             isAdmin={this.props.isAdmin}
             onPage={this.props.onPage}
             participantNotify={this.props.participantNotify}
             pseudonym={this.props.pseudonym}
-            switchPage={this.props.switchPage.bind(this)}
-            toggleDialog={this.props.toggleDialog.bind(this)}
+            switchPage={this.props.switchPage}
+            toggleDialog={this.props.toggleDialog}
             warning={this.props.warning}
             />
 

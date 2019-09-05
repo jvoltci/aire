@@ -29,7 +29,7 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
 
                     <ListQuestions
                     listQnP={listQnP}
-                    removeItem={removeItem.bind(this)}
+                    removeItem={removeItem}
                     />
 
                 </List>
@@ -52,16 +52,18 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
                 </div>
                 
                 {/*Question or Poll Dialog Box check*/}
-                <PrimaryDialog space={space} 
+                <PrimaryDialog
+                space={space} 
                 isPrimaryOpen={isPrimaryOpen} 
-                toggleDialog={toggleDialog.bind(this)} />
+                toggleDialog={toggleDialog}
+                />
 
                 {/*Enter Poll Question Dialog Box*/}
                 <SecondaryDialog 
-                    isSecondaryOpen={isSecondaryOpen} 
-                    toggleDialog={toggleDialog.bind(this)}
-                    updatePollQuestions={updatePollQuestions.bind(this)}
-                     />
+                isSecondaryOpen={isSecondaryOpen} 
+                toggleDialog={toggleDialog}
+                updatePollQuestions={updatePollQuestions.bind(this)}
+                />
 
                 
             </Centered> 
@@ -71,7 +73,7 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
                 <ButtonMaterialUI
                     onClick={() => {
                         if(listQnPLength > 0)
-                            switchPage('', 2)
+                            switchPage(2)
                     }}
                     variant="contained" 
                     color="primary" 

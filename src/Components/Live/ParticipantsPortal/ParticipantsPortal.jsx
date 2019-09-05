@@ -2,6 +2,7 @@ import React from 'react';
 
 import {Centered} from  '../../Styles.jsx';
 import ListParticipants from './ListParticipants/ListParticipants.jsx';
+import Socket from '../../../redux/Socket';
 
 import List from '@material-ui/core/List';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,31 +23,48 @@ class ParticipantsPortalE extends React.Component {
     tempChangeName(e) {
         this.setState({tempParticipantName: e.target.value});
     }
+
+    disableCurrentParticipant(index, name) {
+      const listParticipants = this.props.listParticipants;
+      listParticipants[index] = name;
+      Socket.emit('update serverListParticipants', {
+            pseudonym: this.props.pseudonym,
+            index: index,
+            name: name
+        })
+
+      this.props.updateParticipants(listParticipants);
+
+      fetch('https://n-ivehement.herokuapp.com/fetchq', {
+          method: 'post',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            pseudonym: this.props.pseudonym
+          })
+        })
+          .then(response => response.json())
+          .then(list => {
+            this.props.updateQ(list);
+            this.props.switchPage(5);
+          })
+    }
     
     render() {
-        const {
-            classes,
-            currentParticipantClickSerial,
-            disableCurrentParticipant,
-            handleInvite,
-            listParticipants,
-            wantParticipant,
-        } = this.props;
-
+        const {classes} = this.props;
         return(
             <Centered>
 
                 <List component="nav" className={classes.root} aria-label="mailbox folders">
 
                     <ListParticipants
-                    listParticipants={listParticipants}
-                    handleInvite={handleInvite.bind(this)}
+                    listParticipants={this.props.listParticipants}
+                    updateInvite={this.props.updateInvite}
                     />
 
                 </List>
 
-                <Dialog fullWidth open={wantParticipant} onClose={() => {
-                      handleInvite(false);
+                <Dialog fullWidth open={this.props.wantParticipant} onClose={() => {
+                        this.props.updateInvite(false)
                     }} 
                     aria-labelledby="form-dialog-title">
                     <DialogContent>
@@ -62,15 +80,15 @@ class ParticipantsPortalE extends React.Component {
                     </DialogContent>
                     <DialogActions>
                       <ButtonMaterialUI 
-                        onClick={() => handleInvite(false)}
+                        onClick={() => this.props.updateInvite(false)}
                         color="primary">
                         Cancel
                       </ButtonMaterialUI>
                       <ButtonMaterialUI onClick={() => 
                                 {   
                                     if(this.state.tempParticipantName) {
-                                        disableCurrentParticipant(currentParticipantClickSerial, this.state.tempParticipantName);
-                                        handleInvite(false);
+                                        this.disableCurrentParticipant(this.props.currentParticipantClickSerial, this.state.tempParticipantName);
+                                        this.props.updateInvite(false)
                                     }
                                 }
                             }
@@ -94,22 +112,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ParticipantsPortal = ({
-    currentParticipantClickSerial,
-    disableCurrentParticipant,
-    handleInvite,
-    listParticipants,
-    wantParticipant,
-}) => {
+const ParticipantsPortal = ({currentParticipantClickSerial, listParticipants, pseudonym, switchPage, updateQ, updateInvite, wantParticipant, updateParticipants}) => {
     const classes = useStyles();
     return(
         <ParticipantsPortalE
         classes={classes}
         currentParticipantClickSerial={currentParticipantClickSerial}
-        disableCurrentParticipant={disableCurrentParticipant.bind(this)}
-        handleInvite={handleInvite.bind(this)}
         listParticipants={listParticipants}
+        pseudonym={pseudonym}
         wantParticipant={wantParticipant}
+
+        switchPage={switchPage}
+        updateQ={updateQ}
+        updateInvite={updateInvite}
+        updateParticipants={updateParticipants}
         />
     )
 }

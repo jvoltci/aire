@@ -1,4 +1,5 @@
 import React from 'react';
+import Socket from '../../../redux/Socket';
 
 import { Centered } from '../../Styles.jsx';
 
@@ -28,9 +29,20 @@ class ParticipantsTuneE extends React.Component {
         }
     }
 
+    handleFinal(totalParticipants) {
+        this.props.updateAdmin(totalParticipants);
+        this.props.switchPage(6);
+        Socket.emit('le poll', {
+            isSecure: this.props.secureState,
+            pseudonym: this.props.pseudonym,
+            questions: this.props.listQnP,
+            totalParticipants: totalParticipants,
+        })
+      }
+
     handleParticipants(event) {
       this.setState({tempTotalParticipants: event.target.value}, () => {
-        localStorage.setItem('tempTotalParticipants', JSON.stringify(this.state))
+        this.props.updateAdmin(this.state.tempTotalParticipants);
       })
     }
 
@@ -58,7 +70,7 @@ class ParticipantsTuneE extends React.Component {
                             control={
                                 <Switch size="medium" 
                                 checked={this.props.secureState} 
-                                onClick={() => this.props.toggleSwitch(this.state.tempTotalParticipants)} 
+                                onClick={() => this.props.toggleSwitch()} 
                                 />}
                             label="Secure"
                           />
@@ -71,7 +83,7 @@ class ParticipantsTuneE extends React.Component {
                         <ButtonMaterialUI
                             onClick={() => {
                                 if(this.state.tempTotalParticipants > 1)
-                                    return this.props.handleFinal(this.state.tempTotalParticipants)
+                                    return this.handleFinal(this.state.tempTotalParticipants)
                             }}
                             variant="contained" 
                             color="primary" 
@@ -97,15 +109,19 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ParticipantsTune =({ secureState, toggleSwitch, handleFinal, totalParticipants}) => {
+const ParticipantsTune =({ pseudonym, listQnP, secureState, totalParticipants, switchPage, toggleSwitch, isSecure, updateAdmin}) => {
     const classes = useStyles();
     return(
         <ParticipantsTuneE
         classes={classes}
-        handleFinal={handleFinal.bind(this)}
+        isSecure={isSecure}
+        pseudonym={pseudonym}
+        listQnP={listQnP}
         secureState={secureState}
-        toggleSwitch={toggleSwitch.bind(this)}
+        switchPage={switchPage}
         totalParticipants={totalParticipants}
+        toggleSwitch={toggleSwitch}
+        updateAdmin={updateAdmin}
         />
     )
 }
