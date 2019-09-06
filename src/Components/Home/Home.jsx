@@ -2,6 +2,7 @@ import React from 'react';
 import {Redirect} from 'react-router-dom';
 import { connect } from "react-redux";
 
+import Footer from './Atoms/Footer';
 import './Home.css';
 import {Centered, Rightened} from  '../Styles.jsx';
 import {switchPage, updatePseudonym} from '../../redux/actions';
@@ -58,7 +59,7 @@ class HomeE extends React.Component {
   changePseudonym(event) {
     this.setState({pseudonym: event.target.value});     
   }
-  checkPseudonym() {
+  checkPseudonym = () => {
     if(this.state.pseudonym) {
       this.setState({inProgress: true, isDisable: true});
       fetch('https://n-ivehement.herokuapp.com/pseudonym', {
@@ -150,12 +151,17 @@ class HomeE extends React.Component {
 
             null
           }
-        
-
+        <Footer>
+          ©{(new Date()).getFullYear()}
+        <span>&nbsp;Copyright: &nbsp;</span> 
+        <a style={{fontWeight: 'bold', color: 'black'}} target="_blank" rel="noopener noreferrer" href="https://ivehement.wordpress.com">IVehement, Inc.</a>
+        </Footer>
       </div>
     );
   }
 }
+
+
 
 const mapStateToProps = state => ({
   ...state

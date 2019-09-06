@@ -78,7 +78,7 @@ const rootReducer = (state = initialState, action) => {
     case 'UPDATE_INVITE_SWITCHES':
       return merge(state, {
         wantParticipant: action.payload.want,
-        currentParticipantClickSerial: (action.payload.idx? action.payload.idx: state.currentParticipantClickSerial),
+        currentParticipantClickSerial: (action.payload.idx >= 0? action.payload.idx: state.currentParticipantClickSerial),
       })
 
     case 'UPDATE_FEED':

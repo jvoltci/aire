@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(0, 2),
   },
   snacker: {
-  	backgroundColor: '#16c73f',
+  	backgroundColor: 'teal',
   }
 }));
 

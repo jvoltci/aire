@@ -10,22 +10,22 @@ const polulate = {
     dummyData: [
         {
             index: 0,
-            name: 'Jai',
+            name: 'John',
             isAdded: true
         },
         {
             index: 1,
-            name: 'John',
+            name: 'Kranthi',
             isAdded: false
         },
         {
             index: 2,
-            name: 'Jane',
+            name: 'Prateek',
             isAdded: false
         },
         {
             index: 3,
-            name: 'Jia',
+            name: 'Jai',
             isAdded: false
         },
     ]
