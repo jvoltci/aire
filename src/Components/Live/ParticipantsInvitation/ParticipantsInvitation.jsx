@@ -8,7 +8,7 @@ import List from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 
-const ParticipantsInvitation = ({pseudonym}) => {
+const ParticipantsInvitation = ({ handleApproval, listParticipants, pseudonym}) => {
 	const classes = useStyles();
 	return(
 		<div>
@@ -21,6 +21,8 @@ const ParticipantsInvitation = ({pseudonym}) => {
 				<List component="nav" className={classes.root} aria-label="mailbox folders">
 
 	                <ListRequestedParticipants
+	                handleApproval={handleApproval}
+	                listParticipants={listParticipants}
 	                />
 
 	            </List>
@@ -32,6 +34,7 @@ const ParticipantsInvitation = ({pseudonym}) => {
 				<List component="nav" className={classes.root} aria-label="mailbox folders">
 
 	                <ListAddedParticipants
+	                listParticipants={listParticipants}
 	                />
 
 	            </List>

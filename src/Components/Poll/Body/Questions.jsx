@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Centered } from '../../Styles.jsx';
-import PrimaryDialog from './PrimaryDialog/PrimaryDialog.jsx';
+import { Centered, CenteredNext } from '../../Styles.jsx';
+//import PrimaryDialog from './PrimaryDialog/PrimaryDialog.jsx';
 import SecondaryDialog from './SecondaryDialog/SecondaryDialog.jsx';
 import ListQuestions from './ListQuestions/ListQuestions.jsx';
 
@@ -38,11 +38,11 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
             <Centered>
                 
                 {/*Add Button*/}
-                <Block paddingTop="500px" />
+                <Block paddingTop="100px" />
                 <div id="scroll" myref={myref}>
                     <Fab 
                     size="large" 
-                    onClick={(e) => toggleDialog("primary", true) }
+                    onClick={(e) => toggleDialog("secondary", true) }
                     color="secondary" 
                     aria-label="add" 
                     className={classes.fab}
@@ -52,11 +52,11 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
                 </div>
                 
                 {/*Question or Poll Dialog Box check*/}
-                <PrimaryDialog
+                {/*<PrimaryDialog
                 space={space} 
                 isPrimaryOpen={isPrimaryOpen} 
                 toggleDialog={toggleDialog}
-                />
+                />*/}
 
                 {/*Enter Poll Question Dialog Box*/}
                 <SecondaryDialog 
@@ -69,7 +69,7 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
             </Centered> 
 
             {/*Next Button on page 1*/}
-            <Centered>
+            <CenteredNext>
                 <ButtonMaterialUI
                     onClick={() => {
                         if(listQnPLength > 0)
@@ -81,7 +81,7 @@ const Questions = ({myref, listQnP, removeItem, toggleDialog, space, isPrimaryOp
                     Next
                     <Icon className={classes.rightIcon}>send</Icon>
                 </ButtonMaterialUI>
-            </Centered>
+            </CenteredNext>
         </React.Fragment> 
 	)
 }

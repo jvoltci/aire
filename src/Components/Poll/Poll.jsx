@@ -92,7 +92,7 @@ const mapDispatchToProps = dispatch => ({
   handleHomeClick: (payload) => dispatch(handleHomeClick(payload)),
   warnClick: (payload) => dispatch(warnClick(payload)),
   switchPage: (payload) => dispatch(switchPage(payload)),
-  removeItem: (payload) => dispatch(removeItem(payload)),
+  removeItem: (surface, index) => dispatch(removeItem(surface, index)),
   toggleSwitch: (payload) => dispatch(toggleSwitch(payload)),
   updateQ: (payload) => dispatch(updateQ(payload)),
   updateAdmin: (payload) => dispatch(updateAdmin(payload)),

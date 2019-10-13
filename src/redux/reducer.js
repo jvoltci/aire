@@ -57,7 +57,7 @@ const rootReducer = (state = initialState, action) => {
 
     case 'REMOVE_ITEM':
       let newQ = state.listQnP;
-      newQ.splice(Number(action.payload.index), 1)
+      newQ.splice(Number(action.payload.index), 1);
       return merge(state, {listQnP: newQ})
 
     case 'SUBMIT':
@@ -121,6 +121,8 @@ const handleWarningClick = (state) => {
     warning: false,
     isAdmin: 0,
     liveFeedUpdate: {},
+    listParticipants: {},
+    totalParticipants: 0,
   })
 }
 

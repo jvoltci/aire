@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-const polulate = {
+/*const polulate = {
     dummyData: [
         {
             index: 0,
@@ -31,12 +31,12 @@ const polulate = {
             isAdded: false
         },
     ]
-}
+}*/
 
-const ListParticipants = () => {
+const ListParticipants = ({listParticipants, handleApproval}) => {
     const classes = useStyles();
-    const tempList = polulate.dummyData.map((unit, i) => {
-        if(!unit.isAdded)
+    const tempList = Object.keys(listParticipants).map((index, i) => {
+        if(listParticipants[index]["isAdded"] === "neutral" && listParticipants[index]["name"])
             return(
                 <div key={i}>
                     <ListItem>
@@ -44,7 +44,7 @@ const ListParticipants = () => {
                           aria-describedby="client-snackbar"
                           message={
                             <span id="client-snackbar" className={classes.message}>
-                                {`${unit.index+1} | ${unit.name}`}
+                                {`${Number(index)+1} | ${listParticipants[index]["name"]}`}
                             </span>
                           }
                         />
@@ -53,6 +53,7 @@ const ListParticipants = () => {
                         aria-label="delete" 
                         size="small"
                         style={{ color: 'red' }}
+                        onClick={null}//() => handleApproval("no", index)} --->>> TODO
                         >
                             <PersonAddDisabledIcon />
                         </IconButton>
@@ -65,8 +66,9 @@ const ListParticipants = () => {
                         aria-label="delete" 
                         size="small"
                         style={{ color: 'blue' }}
+                        onClick={() => handleApproval("yes", index)}
                         >
-                            <PersonAddIcon />
+                            <PersonAddIcon/>
                         </IconButton>
                         
                     </ListItem>

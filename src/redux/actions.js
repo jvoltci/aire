@@ -14,7 +14,7 @@ export const handleLiveFeedUpdate = data => ({
 })
 export const removeItem = (surface, index) => ({
   type: 'REMOVE_ITEM',
-  payload: {surface, index}
+  payload: {surface: surface, index: index}
 })
 export const submit = pollResult => ({
   type: 'SUBMIT',

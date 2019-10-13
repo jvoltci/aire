@@ -13,28 +13,79 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
 class ParticipantsPortalE extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             tempParticipantName: '',
+            index: -1,
+            isApproval: false,
+            flag: 0,
         }
+        this.props = props;
+    }
+    componentDidUpdate() {
+      if(this.state.index > -1) {
+        if(!this.state.flag) this.toggleApproval();
+        if(this.props.listParticipants[this.state.index].isAdded === "yes") {
+        this.fetchQuestions();
+        //console.log(this.props.listParticipants[this.state.index].isAdded);
+      }
+
+      if(this.props.listParticipants[this.state.index].isAdded === "no") {
+        if(!this.state.flag) this.toggleApproval(); //ToDo
+        this.props.listParticipants[this.state.index].isAdded = "neutral";
+
+        Socket.emit('update serverListParticipants', {
+            pseudonym: this.props.pseudonym,
+            index: this.state.index,
+            isAddedAs: 'neutral'
+        });
+        //console.log(this.props.listParticipants[index]["isAdded"]);
+      }
+      }
     }
 
     tempChangeName(e) {
         this.setState({tempParticipantName: e.target.value});
     }
 
+    toggleApproval() {
+      this.setState(prevState => ({isApproval: !prevState.isApproval}));
+      if(!this.state.flag) this.setState({flag: 1});
+    }
+
     disableCurrentParticipant(index, name) {
+      this.toggleApproval();
+      this.setState({index: index});
       const listParticipants = this.props.listParticipants;
-      listParticipants[index] = name;
-      Socket.emit('update serverListParticipants', {
+      listParticipants[index]["name"] = name;
+      
+
+      if(this.props.polls[this.props.pseudonym]) {
+        Socket.emit('update serverListParticipants', {
             pseudonym: this.props.pseudonym,
             index: index,
             name: name
         })
+        this.props.updateParticipants(listParticipants);
 
-      this.props.updateParticipants(listParticipants);
+        
+        //this.handleInvitation(index);
+      }
+      else {
+        Socket.emit('update serverListParticipants', {
+            pseudonym: this.props.pseudonym,
+            index: index,
+            name: name
+        });
+        this.props.updateParticipants(listParticipants);
 
+        this.fetchQuestions();
+      }
+      
+    }
+
+    fetchQuestions() {
       fetch('https://n-ivehement.herokuapp.com/fetchq', {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
@@ -46,8 +97,28 @@ class ParticipantsPortalE extends React.Component {
           .then(list => {
             this.props.updateQ(list);
             this.props.switchPage(5);
-          })
+          });
     }
+
+    /*handleInvitation(index) {
+      if(this.props.listParticipants[index]["isAdded"] == "yes") {
+        this.fetchQuestions();
+        console.log(this.props.listParticipants["isAdded"]);
+      }
+
+      if(this.props.listParticipants["isAdded"] == "no") {
+
+        this.props.listParticipants["isAdded"] = "neutral";
+
+        Socket.emit('update serverListParticipants', {
+            pseudonym: this.props.pseudonym,
+            index: index,
+            name: name,
+            isAddedAs: 'neutral'
+        });
+        console.log(this.props.listParticipants["isAdded"]);
+      }
+    }*/
     
     render() {
         const {classes} = this.props;
@@ -99,6 +170,17 @@ class ParticipantsPortalE extends React.Component {
                       </ButtonMaterialUI>
                     </DialogActions>
                 </Dialog>
+
+                <Dialog fullWidth open={this.state.isApproval}
+                    aria-labelledby="form-dialog-title">
+                    <DialogContent>
+                      <Centered>
+                        <div>
+                          {"Waiting for approval..."}
+                        </div>
+                      </Centered>
+                    </DialogContent>
+                </Dialog>
             </Centered>
         )
     }
@@ -112,13 +194,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ParticipantsPortal = ({currentParticipantClickSerial, listParticipants, pseudonym, switchPage, updateQ, updateInvite, wantParticipant, updateParticipants}) => {
+const ParticipantsPortal = ({currentParticipantClickSerial, listParticipants, polls, pseudonym, switchPage, updateQ, updateInvite, wantParticipant, updateParticipants}) => {
     const classes = useStyles();
     return(
         <ParticipantsPortalE
         classes={classes}
         currentParticipantClickSerial={currentParticipantClickSerial}
         listParticipants={listParticipants}
+        polls={polls}
         pseudonym={pseudonym}
         wantParticipant={wantParticipant}
 

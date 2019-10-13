@@ -38,6 +38,12 @@ export const Centered = styled('div', {
   height: '100%',
 });
 
+export const CenteredNext = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
 export const Rightened = styled('div', {
   display: 'flex',
   float: 'right',

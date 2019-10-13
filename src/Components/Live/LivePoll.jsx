@@ -45,6 +45,14 @@ class LivePollE extends React.Component {
 			pollResult: {},
 		}
 	}
+
+	handleApproval(isAdded, index) {
+		Socket.emit('update serverListParticipants', {
+            pseudonym: this.props.pseudonym,
+            index: index,
+            isAddedAs: isAdded
+        });
+	}
 	handleInitialSubmit() {
 		if(Object.keys(this.state.pollResult).length === this.props.listQnP.length) {
 			Socket.emit('update pollResult', {
@@ -112,6 +120,8 @@ class LivePollE extends React.Component {
 					            />
 
 					            <ParticipantsInvitation
+					            handleApproval={this.handleApproval.bind(this)}
+					            listParticipants={this.props.listParticipants}
 					            pseudonym={this.props.pseudonym}
 					            />
 
@@ -130,6 +140,7 @@ class LivePollE extends React.Component {
 			                        <ParticipantsPortal
 			                        currentParticipantClickSerial={this.props.currentParticipantClickSerial}
 			                        listParticipants={this.props.listParticipants}
+			                        polls={this.props.polls}
 			                        pseudonym={this.props.pseudonym}
 			                        wantParticipant={this.props.wantParticipant}
 			                        switchPage={this.props.switchPage}
@@ -165,6 +176,7 @@ class LivePollE extends React.Component {
 							            participantNotify={this.props.participantNotify}
 							            pseudonym={this.props.pseudonym}
 							            switchPage={this.props.switchPage}
+							            toggleDialog={this.props.toggleDialog}
 							            total={this.props.total}
 							            totalParticipants={this.props.totalParticipants}
 							            warning={this.props.warning}
@@ -206,11 +218,11 @@ const LivePoll = ({rootReducer, submit, switchPage, handleHomeClick, warnClick, 
 		currentParticipantClickSerial={rootReducer.currentParticipantClickSerial}
 		pseudonym={rootReducer.pseudonym}
 		onPage={rootReducer.onPage}
-		polls={rootReducer.polls}
 		isAdmin={rootReducer.isAdmin}
 		listParticipants={rootReducer.listParticipants}
 		liveFeedUpdate={rootReducer.liveFeedUpdate}
 		participantNotify={rootReducer.participantNotify}
+		polls={rootReducer.polls}
 		warning={rootReducer.warning}
 		listQnP={rootReducer.listQnP}
 		total={rootReducer.total}

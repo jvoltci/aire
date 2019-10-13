@@ -6,7 +6,7 @@ import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
 import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@material-ui/core/Icon';
 
-const polulate = {
+/*const polulate = {
     dummyData: [
         {
             index: 0,
@@ -29,12 +29,12 @@ const polulate = {
             isAdded: false
         },
     ]
-}
+}*/
 
-const ListParticipants = () => {
+const ListParticipants = ({listParticipants}) => {
     const classes = useStyles();
-    const tempList = polulate.dummyData.map((unit, i) => {
-        if(unit.isAdded)
+    const tempList = Object.keys(listParticipants).map((index, i) => {
+        if(listParticipants[index]["isAdded"] === "yes" && listParticipants[index]["name"])
             return(
                 <div key={i}>
                     <ListItem>
@@ -42,7 +42,7 @@ const ListParticipants = () => {
                           aria-describedby="client-snackbar"
                           message={
                             <span id="client-snackbar" className={classes.message}>
-                                {`${unit.index+1} | ${unit.name}`}
+                                {`${Number(index)+1} | ${listParticipants[index]["name"]}`}
                             </span>
                           }
                         />

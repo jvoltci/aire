@@ -57,7 +57,7 @@ class ParticipantsTuneE extends React.Component {
                         onChange={(e) => this.handleParticipants(e)}
                         type="number"
                         className={this.props.classes.textField}
-                        defaultValue={this.props.totalParticipants}
+                        defaultValue={0}
                         InputLabelProps={{
                           shrink: true,
                         }}
