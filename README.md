@@ -1,4 +1,12 @@
-#Realtime polling app using ReactJS and NodeJS PWA app.
+![aire](https://github.com/jvoltci/aire/blob/master/images/aire.png)
+# aire
+A smart polling system.
+<br>
+<br>
+<i>aire is polling and survey system for those who want the quick result and feedback over a particular local region. I made this app seeing the gap here in my college. It becomes hectic to take a survey or feedback on an issue so to simplify this process or just to air this problem I came up with "aire".</i>
+
+
+# Realtime polling app using ReactJS and NodeJS PWA app.
 
 
 This app will allow you to:
@@ -9,7 +17,7 @@ This app will allow you to:
 *Allow user to vote on any poll.
 *Show live voting result with decent charts and statistics.
 
-#How to run the code
+# How to run the code
 
 Make sure you have Node and Reactjs installed in your system and install all necessary node modules/dependencies on both server(nodeJS) and client(reactjs) by running:
 
