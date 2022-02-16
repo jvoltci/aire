@@ -84,7 +84,7 @@ class ParticipantsTuneE extends React.Component {
           <Block paddingTop="300px" />
           <ButtonMaterialUI
             onClick={() => {
-              if (this.state.tempTotalParticipants > 1)
+              if (this.state.tempTotalParticipants > 1 && this.state.tempTotalParticipants  < 1000)
                 return this.handleFinal(this.state.tempTotalParticipants)
             }}
             variant="contained"
