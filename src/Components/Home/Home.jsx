@@ -154,7 +154,7 @@ class HomeE extends React.Component {
         <Footer>
           ©{(new Date()).getFullYear()}
         <span>&nbsp;Copyright: &nbsp;</span> 
-        <a style={{fontWeight: 'bold', color: 'black'}} target="_blank" rel="noopener noreferrer" href="https://ivehement.wordpress.com">IVehement</a>
+        <a style={{fontWeight: 'bold', color: 'black'}} target="_blank" rel="noopener noreferrer" href="https://ivehement.wordpress.com">Vehement</a>
         </Footer>
       </div>
     );
