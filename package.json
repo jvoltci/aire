@@ -8,8 +8,7 @@
     "@material-ui/icons": "^4.2.1",
     "baseui": "^8.16.0",
     "chart.js": "^2.9.4",
-    "gh-pages": "^2.1.1",
-    "react": "^16.8.6",
+    "react": "^16.14.0",
     "react-chartjs-2": "^2.7.6",
     "react-dom": "^16.8.6",
     "react-particles-js": "^2.7.0",
@@ -45,5 +44,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^2.2.0"
   }
 }
