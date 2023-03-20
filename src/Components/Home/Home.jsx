@@ -62,7 +62,7 @@ class HomeE extends React.Component {
   checkPseudonym = () => {
     if(this.state.pseudonym) {
       this.setState({inProgress: true, isDisable: true});
-      fetch('https://n-ivehement.herokuapp.com/pseudonym', {
+      fetch('https://aire-api.onrender.com/pseudonym', {
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({

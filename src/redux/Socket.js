@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
 const connect = () => {
-  Socket.socket = io.connect('https://n-ivehement.herokuapp.com');
+  Socket.socket = io.connect('https://aire-api.onrender.com');
 }
 
 const on = (eventName, callback) => {

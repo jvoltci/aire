@@ -34,7 +34,7 @@ const ListPoll = ({polls, switchPage, updatePseudonym, updateParticipants}) => {
 		            />
 		            <Button
 		            onClick={() => {
-		            	fetch('https://n-ivehement.herokuapp.com/listparticipants', {
+		            	fetch('https://aire-api.onrender.com/listparticipants', {
 				        method: 'post',
 				        headers: {'Content-Type': 'application/json'},
 				        body: JSON.stringify({

@@ -19,7 +19,7 @@ class LiveFeed extends React.Component {
 
     handleLiveFeed(pseudonym) {
         if(!this.props.liveFeedUpdate) {
-          fetch('https://n-ivehement.herokuapp.com/fetchlivefeed', {
+          fetch('https://aire-api.onrender.com/fetchlivefeed', {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({

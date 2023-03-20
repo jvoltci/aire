@@ -86,7 +86,7 @@ class ParticipantsPortalE extends React.Component {
     }
 
     fetchQuestions() {
-      fetch('https://n-ivehement.herokuapp.com/fetchq', {
+      fetch('https://aire-api.onrender.com/fetchq', {
           method: 'post',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
