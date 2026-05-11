@@ -1,27 +1,40 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #0a0a0a;
+  --color-surface: #161616;
+  --color-surface-2: #1f1f1f;
+  --color-border: #2a2a2a;
+  --color-fg: #f5f5f5;
+  --color-muted: #9aa0a6;
+  --color-accent: #00d4ff;
+  --color-accent-2: #ff3e8a;
+  --color-yes: #34d399;
+  --color-no: #f87171;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', sans-serif;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-image: linear-gradient(to bottom , white, white, white);
-  background-repeat: no-repeat;
-  background-size: cover cover;
-
+  text-rendering: optimizeLegibility;
 }
 
-@font-face {font-family: "FF Magda Clean Mono";
-    src: url("https://db.onlinewebfonts.com/t/631ff3be8e08ee5f7db026efc6a12ca1.eot"); /* IE9*/
-    src: url("https://db.onlinewebfonts.com/t/631ff3be8e08ee5f7db026efc6a12ca1.eot?#iefix") format("embedded-opentype"), /* IE6-IE8 */
-    url("https://db.onlinewebfonts.com/t/631ff3be8e08ee5f7db026efc6a12ca1.woff2") format("woff2"), /* chrome firefox */
-    url("https://db.onlinewebfonts.com/t/631ff3be8e08ee5f7db026efc6a12ca1.woff") format("woff"), /* chrome firefox */
-    url("https://db.onlinewebfonts.com/t/631ff3be8e08ee5f7db026efc6a12ca1.ttf") format("truetype"), /* chrome firefox opera Safari, Android, iOS 4.2+*/
-    url("https://db.onlinewebfonts.com/t/631ff3be8e08ee5f7db026efc6a12ca1.svg#FF Magda Clean Mono") format("svg"); /* iOS 4.1- */
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.5); }
+  100% { box-shadow: 0 0 0 16px rgba(0, 212, 255, 0); }
+}
+
+.live-dot {
+  animation: pulse-ring 1.6s ease-out infinite;
 }

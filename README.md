@@ -1,34 +1,65 @@
-![aire](https://github.com/jvoltci/aire/blob/master/images/aire.png)
 # aire
-A smart polling system.
-<br>
-<br>
-<i>aire is polling and survey system for those who want the quick result and feedback over a particular local region. I made this app seeing the gap here in my college. It becomes hectic to take a survey or feedback on an issue so to simplify this process or just to air this problem I came up with "aire".</i>
 
+![aire](images/aire.png)
 
-# Realtime polling app using ReactJS and NodeJS PWA app.
+Realtime polls at the edge. Create a yes/no poll, share the link, watch votes update live.
 
+**Live:** https://jvoltci.github.io/aire/
+**API:** https://aire-api.altrusian.workers.dev
 
-This app will allow you to:
+## Stack
 
-*Add new poll.
-*Add new Secured poll where poll creator gets to approve their polling audience.
-*Notification is sent to poll creator if its a secure poll when their audience needs permission to vote.
-*Allow user to vote on any poll.
-*Show live voting result with decent charts and statistics.
+- **React 19** + **TypeScript** + **Vite 6**
+- **Tailwind CSS 4** (zero-config v4)
+- **HashRouter** (GitHub Pages SPA-friendly)
+- Native **WebSocket** + auto-reconnect
+- Backend lives in [aire-api](https://github.com/jvoltci/aire-api): Cloudflare Worker + Durable Object + D1
 
-# How to run the code
+## Run locally
 
-Make sure you have Node and Reactjs installed in your system and install all necessary node modules/dependencies on both server(nodeJS) and client(reactjs) by running:
-
-```
+```bash
 npm install
+npm run dev          # http://localhost:5173
 ```
 
-After installation, run the node and react application using following command in their respective directories:
+Override the API URL with an env var if you want to point at a local worker:
+
+```bash
+echo 'VITE_API_URL=http://127.0.0.1:8787' > .env.local
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build        # outputs to dist/
+npm run preview      # serve the built dist/ locally
+```
+
+## Deploy
+
+Pushing to `master` auto-deploys to GitHub Pages via the workflow in
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml).
+
+**One-time setup:** in the repo on GitHub, go to
+**Settings → Pages → Build and deployment → Source** and select **GitHub Actions**.
+
+## Project layout
 
 ```
-npm start
+src/
+├── main.tsx              # entry
+├── index.css             # tailwind v4 + theme tokens
+├── components/
+│   ├── Shell.tsx         # layout
+│   └── Bar.tsx           # animated yes/no bar
+├── routes/
+│   ├── Home.tsx          # create a poll
+│   ├── Vote.tsx          # cast a vote
+│   └── Results.tsx       # live results
+└── lib/
+    ├── api.ts            # REST client
+    ├── ws.ts             # WebSocket with reconnect + ping
+    ├── env.ts            # API base URL
+    └── voter.ts          # voter id in localStorage (dedupe)
 ```
-
-Visit `localhost:3000` to view the app.
