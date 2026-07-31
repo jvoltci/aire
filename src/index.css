@@ -1,40 +1,264 @@
-@import 'tailwindcss';
+/* aire — nilam.
+ *
+ * ── WHY HUE 219.5 AND NOT NILAM'S 285 ────────────────────────────────
+ *
+ * aire's identity was one neon: --color-accent #00d4ff on a near-black page. Measured
+ * with nilam's own hexToOklch, that hex is oklch(0.8043 0.1459 219.5) — and its chroma
+ * is 100.0% of the sRGB gamut edge at that lightness and hue. There is no headroom
+ * above it at all. That is what "neon" means numerically.
+ *
+ * Replacing it with nilam's violet would have been a rebrand, so the hue was kept and
+ * the METHOD adopted instead: `npx nilam 219.5` re-solves all twelve steps of all six
+ * families from the same contrast inversions and re-runs the prover on them.
+ *
+ *   498 assertions, all passed        sRGB
+ *   498 assertions, all passed        display-p3
+ *
+ * The hue is aire's, measured (219.5151, rounded to a tenth — 0.015 degrees is far
+ * below any discrimination threshold). Regenerate with:
+ *
+ *   npx nilam 219.5 --css=src/nilam.tokens.aire.css
+ *
+ * WHAT THE MOVE COSTS, because it is not free and the numbers should be here rather
+ * than in a commit message:
+ *
+ *   brand chroma      0.107 light / 0.110 dark, against nilam 285's 0.219 / 0.174
+ *   brand solid       3.08:1 on its page in light (285 gets 4.31:1); 6.30:1 in dark
+ *   dichromat floor   0.0333, against 285's 0.0924
+ *
+ * The chroma halves because at hue 220 the sRGB gamut is narrow at the lightness the
+ * contrast constraints select, so the brand is a deep teal-cyan (#269bb8 / #28a1c0)
+ * rather than electric cyan. THE HUE SURVIVED; THE NEON DID NOT — and it could not,
+ * because the neon *was* the gamut-edge chroma at L 0.80, and nilam will not put a
+ * solid there: in light mode a fill that light cannot carry its own ink.
+ *
+ * The 0.0333 floor is the documented blue-brand case. nilam reports BRAND/ok collapse
+ * under tritanopia and REQUIRES the affected components to carry a channel that is not
+ * hue. Here that is every status badge's .n-badge-glyph and the literal words "Yes",
+ * "No", "Live" — see the comments in Results.tsx and Bar.tsx.
+ *
+ * ── LAYER ORDER IS LOAD-BEARING ───────────────────────────────────────
+ *
+ * Taken from tools/src/app/globals.css rather than rediscovered, then re-verified here
+ * because that project is Next and this one is Vite. The result held: grep the built CSS
+ * for the @layer statement and nilam sits between Tailwind's base and utilities.
+ *
+ * Sub-layers cannot interleave with outside layers. Every child of `nilam` sits together
+ * at the position where `nilam` is first named, so with a plain `@import 'tailwindcss'`
+ * there are only two outcomes and both are wrong:
+ *
+ *   nilam after tailwind    nilam.base beats preflight (right) and also beats Tailwind's
+ *                           UTILITIES (catastrophic) — `:where(p) { margin: 0 }` would
+ *                           defeat mt-2, `:where(ul) { list-style: none }` would defeat
+ *                           list-disc, `button { color: inherit }` would defeat text-*.
+ *   nilam before tailwind   utilities win (right) but preflight beats nilam.base, so
+ *                           `h1..h6 { font-weight: inherit }` wins and every heading
+ *                           renders at body weight.
+ *
+ * Tailwind's own granular form is the fix: splitting it into three makes `theme`, `base`
+ * and `utilities` separate TOP-LEVEL layers, and `nilam` can then sit between them.
+ *
+ * nilam.motion IS IMPORTED AND IS IN THE LIST, and both halves matter. It holds the loader
+ * exemption from the reduced-motion rule, declared with !important — and !important resolves
+ * in REVERSE layer order, so it must come BEFORE nilam.base to beat nilam.base's blanket
+ * `animation-duration: 0.01ms !important`.
+ *
+ * ONE CORRECTION TO THE MECHANISM, measured rather than assumed. Tailwind v4's compiler does
+ * NOT emit the statement below as written: grep the built CSS and the only surviving
+ * declaration is `@layer nilam.utilities;` — the one layer with no rules in it. Every other
+ * layer's ORDER comes from the source position of its emitted block, which comes from the
+ * @import order right underneath. So the statement records the intent and THE IMPORT ORDER IS
+ * WHAT ENFORCES IT. Move the motion import and the statement will not save you.
+ *
+ * Measured both ways round on the built app, reading getComputedStyle under
+ * --force-prefers-reduced-motion:
+ *
+ *                              motion imported BEFORE base   AFTER base (motion ends up last)
+ *   .n-bar::after              n-breathe 1.4s                n-breathe 1e-05s      frozen
+ *   .n-skeleton                n-breathe 1.8s infinite       n-breathe 1e-05s x1   frozen
+ *   .n-spinner                 n-breathe 1.4s                n-breathe 1e-05s      frozen
+ *   .n-btn[aria-busy]::before  n-breathe                     frozen
+ *
+ * The right-hand column is an app that looks hung, and the skeleton's single iteration is the
+ * second bug nilam's own motion.css records: it breathes once, settles, and the reader
+ * concludes the content arrived blank.
+ *
+ * FOR ANYONE PORTING THIS BACK: tools/src/app/globals.css does not import nilam/motion.css at
+ * all, so it has no exemption for its layer order to protect — its loaders freeze either way.
+ * Reported; not changed from here. */
+@layer theme, base, nilam.motion, nilam.tokens, nilam.base, nilam.components, nilam.utilities, components, utilities;
 
-@theme {
-  --color-bg: #0a0a0a;
-  --color-surface: #161616;
-  --color-surface-2: #1f1f1f;
-  --color-border: #2a2a2a;
-  --color-fg: #f5f5f5;
-  --color-muted: #9aa0a6;
-  --color-accent: #00d4ff;
-  --color-accent-2: #ff3e8a;
-  --color-yes: #34d399;
-  --color-no: #f87171;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', sans-serif;
-}
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
 
-html, body, #root {
+/* The solved palette. Local rather than `nilam/tokens.css` because that one is hue 285;
+   this is the same generator run on 219.5. Everything else comes from the package. */
+@import './nilam.tokens.aire.css';
+@import 'nilam/scale.css';
+@import 'nilam/motion.css';
+@import 'nilam/base.css';
+@import 'nilam/tailwind.css';
+@import 'nilam/components.css';
+
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* ── the sticky footer ────────────────────────────────────────────────
+ *
+ * nilam.base styles `body` but has no opinion about page height, and aire's footer is
+ * pinned to the bottom of the viewport by a flex column that needs a full-height chain.
+ * Unlayered, so it beats nilam.base without !important.
+ *
+ * The background, colour and font-family that used to sit here are gone: nilam.base sets
+ * all three from --neutral-1, --neutral-12 and --font-sans, and keeping local copies
+ * would be a second palette to drift out of sync with the solved one. */
+html,
+body,
+#root {
   height: 100%;
-  background: var(--color-bg);
-  color: var(--color-fg);
-  font-family: var(--font-sans);
-}
-
-body {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-@keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.5); }
-  100% { box-shadow: 0 0 0 16px rgba(0, 212, 255, 0); }
+/* ── the <a> underline reset, and why it is in THIS layer ─────────────
+ *
+ * nilam.base underlines every <a>, which is right for a document and wrong here. aire's
+ * links are a brand lockup, a header nav item and two navigation affordances;
+ * underlining all of them makes the chrome read as broken.
+ *
+ * `@layer components` is the only correct home, and the two alternatives both fail:
+ *   @layer base   loses to nilam.base on layer order, so no reset at all.
+ *   unlayered     beats EVERY layered rule, so it would also defeat Tailwind's own
+ *                 `underline` utility and nilam's `.n-link`, making an intentional
+ *                 underline impossible anywhere in the app.
+ *
+ * The layer statement at the top puts `components` after nilam.* and before `utilities`,
+ * so this outranks nilam.base's `a` rule and still loses to `.n-link`. No accessibility
+ * is lost: WCAG 1.4.1 requires that colour not be the ONLY signal for a link, and
+ * nothing here is identified by colour alone — the logo is a mark, the nav item sits in
+ * a nav, and the two in-page links use .n-link and keep their underline. */
+@layer components {
+  a {
+    text-decoration-line: none;
+  }
 }
 
-.live-dot {
-  animation: pulse-ring 1.6s ease-out infinite;
+/* ── the live dot ─────────────────────────────────────────────────────
+ *
+ * aire's mark: a pulsing ring, the one piece of the old identity that is pure geometry
+ * and survives the palette change untouched. The ring colour was rgba(0, 212, 255, 0.5)
+ * — the neon, hard-coded — and is now mixed from the solved solid, so it follows the
+ * mode like everything else.
+ *
+ * DELIBERATELY NOT EXEMPTED from prefers-reduced-motion. nilam.motion exempts loaders
+ * because a frozen spinner reads as a hung app; this is decoration, and the word "aire"
+ * beside it carries no information the pulse adds. nilam.base's blanket rule stops it,
+ * and that is the correct outcome rather than something to work around. */
+@keyframes aire-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-9) 50%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 16px color-mix(in oklab, var(--brand-9) 0%, transparent);
+  }
+}
+
+@layer components {
+  .aire-live-dot {
+    animation: aire-pulse-ring 1.6s var(--ease-out) infinite;
+  }
+
+  /* ── the one display element ────────────────────────────────────────
+   *
+   * --text-display paired with --weight-thin (200), which is the pairing nilam's scale
+   * explicitly recommends and almost nothing uses: "large type gets its presence from
+   * size, and adding weight to both is why 'bold and big' reads as shouting rather than
+   * as confidence." Used exactly once in the app, on the Home heading, because aire is
+   * one thing — realtime polls — and that is the sentence saying so.
+   *
+   * A LOCAL CLASS RATHER THAN A UTILITY, and that is a gap in the bridge rather than a
+   * preference. nilam.tailwind.css maps colour, radius, shadow, easing and font-family
+   * into Tailwind's @theme namespaces but NOT the type scale, the weights or the space
+   * scale — so `text-display` and a 200 `font-thin` do not exist as classes, and the rest
+   * of this app's bare type (text-sm, text-xs) still comes from TAILWIND's scale, not
+   * nilam's. Two type scales coexist as a result. Reported upstream; not worked around
+   * here, because mapping them locally would be a second scale to keep in sync.
+   *
+   * text-wrap: balance comes from nilam.base's heading rule. letter-spacing does too, and
+   * at this size -0.02em is right, so it is left alone. */
+  .aire-display {
+    font-size: var(--text-display);
+    font-weight: var(--weight-thin);
+    line-height: var(--leading-tight);
+  }
+
+  /* ── the tally meter, and the two measurements that shaped it ───────
+   *
+   * A vote share is a MEASUREMENT, not a wait, so it is .n-meter and not .n-progress.
+   * .n-progress answers "this much is done" about an operation in flight; substituting
+   * it here would tell the reader the poll was still loading when it had finished. aire
+   * has no known-proportion WAIT anywhere, so .n-progress is deliberately unused.
+   *
+   * Two overrides, both measured with nilam's contrast() against the solved 219.5 ramp,
+   * and both fixing a boundary that fails at nilam's defaults:
+   *
+   * 1. THE EXTENT. .n-meter's track is --neutral-4 and these sit on a .n-card, which is
+   *    --surface. That pair is 1.27:1 in light and 1.09:1 in DARK — the track is
+   *    invisible, so the bar appears to float and the reader cannot see what 100% would
+   *    be. It is the same defect nilam already found and fixed for .n-skeleton (its own
+   *    comment: "in DARK mode --surface and --neutral-3 have IDENTICAL lightness ... a
+   *    skeleton built from step 3 was completely invisible on a card"); .n-meter,
+   *    .n-progress and .n-bar were not moved with it. Reported upstream.
+   *
+   *    A --neutral-7 border is the fix: 3.64:1 light, 3.06:1 dark, so the extent clears
+   *    WCAG 1.4.11's 3:1 in both modes. No single step can serve as the track instead —
+   *    step 7 is visible against the card but then the FILL is only 1.1-1.8:1 against
+   *    it. Measured every step from 4 to 8.
+   *
+   * 2. THE VALUE. The boundary that encodes the number is fill-against-track, and step 9
+   *    does not clear 3:1 there in light mode:
+   *
+   *                     vs --neutral-4 track      light     dark
+   *        ok-9                                   2.55:1    5.14:1
+   *        ok-10                                  3.01:1    6.06:1   <- both pass
+   *        danger-9                               3.59:1    4.34:1
+   *        danger-10                              4.23:1    5.12:1   <- both pass
+   *
+   *    So the fills are step 10, not step 9. Step 10 is "solid hover" in the role model,
+   *    one notch along a scale that was solved as a whole; nothing is invented here. */
+  .aire-meter {
+    border: var(--line-1) solid var(--neutral-7);
+  }
+
+  /* ── the ok-filled button nilam does not ship ────────────────────────
+   *
+   * nilam ships .n-btn-fill (brand), .n-btn-ink (neutral-12) and .n-btn-danger, and no
+   * .n-btn-ok or .n-btn-warn. aire's Vote page needs a matched pair — the selected "Yes"
+   * and the selected "No" — so "No" uses the shipped .n-btn-danger and this is the missing
+   * half. Reported upstream as a gap, not a disagreement.
+   *
+   * A COPY OF nilam's .n-btn-danger rule with the family swapped, deliberately, so the two
+   * buttons cannot drift: --ok-9 with --ok-ink is the same solved solid-plus-ink pairing.
+   * Never a literal here — --ok-ink is the DARK one in both modes (L 0.16), because ok-9
+   * at L 0.63 cannot carry white, whereas --danger-ink on the button beside it is white in
+   * light and dark in dark. Two fills, two different inks, one mechanism. Hard-coding
+   * either would have been right for one of them and wrong for the other. */
+  .aire-btn-ok {
+    background: var(--ok-9);
+    border-color: transparent;
+    color: var(--ok-ink);
+  }
+
+  .aire-btn-ok:hover {
+    background: var(--ok-10);
+  }
+
+  .aire-meter-yes .n-meter-fill {
+    background: var(--ok-10);
+  }
+
+  .aire-meter-no .n-meter-fill {
+    background: var(--danger-10);
+  }
 }

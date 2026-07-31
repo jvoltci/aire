@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getPoll, type Poll } from '../lib/api';
 import { openPollSocket, type PollSocket } from '../lib/ws';
 import { getVoterId } from '../lib/voter';
+import { PollSkeleton } from '../components/PollSkeleton';
 
 export function Vote() {
   const { id = '' } = useParams();
@@ -40,51 +41,79 @@ export function Vote() {
   );
 
   const submit = () => {
-    if (!poll || !socket || !allAnswered) return;
+    if (!poll || !socket || !allAnswered || submitting) return;
     setSubmitting(true);
     setError(null);
     socket.send({ type: 'vote', voterId: getVoterId(), answers });
   };
 
-  if (error && !poll) return <div className="text-(--color-no)">{error}</div>;
-  if (!poll) return <div className="text-(--color-muted)">Loading…</div>;
+  if (error && !poll) {
+    return (
+      <div className="n-note n-note-danger" role="alert">
+        <span className="n-note-glyph" aria-hidden="true">×</span>
+        <div>
+          <span className="n-note-title">This poll is not available.</span> {error}{' '}
+          <Link to="/" className="n-link">Create a new one</Link>.
+        </div>
+      </div>
+    );
+  }
+  if (!poll) return <PollSkeleton rows={2} />;
 
   return (
-    <div className="space-y-6">
+    <div className="n-stack gap-6">
       <header>
         {poll.title && <h1 className="text-2xl font-semibold">{poll.title}</h1>}
-        <p className="text-(--color-muted) text-sm mt-1">
+        <p className="mt-1 text-sm text-muted-foreground">
           Cast your vote. Live results update in real time.
         </p>
       </header>
 
-      <div className="space-y-4">
+      <div className="n-stack gap-4">
         {poll.questions.map((q, i) => {
           const key = String(i);
           const value = answers[key];
           return (
-            <div key={i} className="p-4 rounded-xl bg-(--color-surface) border border-(--color-border)">
-              <div className="mb-3 font-medium">{q}</div>
-              <div className="grid grid-cols-2 gap-2">
+            <div key={i} className="n-card n-card-pad n-stack gap-3">
+              {/* NOT a <fieldset>/<legend>, and this was a measured regression rather than
+                  a preference. A <legend> is laid out in its fieldset's BORDER box: it
+                  notches the border, escapes .n-card-pad's padding and cuts the top-left
+                  radius. Screenshotted in both modes — the question sat on the card's top
+                  edge with the border broken around it.
+                  role="radiogroup" + aria-labelledby gives the group the same accessible
+                  name from the visible heading, with no layout side effects. */}
+              <h2 id={`q${i}`} className="font-medium text-neutral-12">
+                {q}
+              </h2>
+              <div
+                className="grid grid-cols-2 gap-2"
+                role="radiogroup"
+                aria-labelledby={`q${i}`}
+              >
+                {/* Two .n-btn, and the selected one becomes a FILL. That is the whole
+                    polarity trick: --ok-9 / --danger-9 with --ok-ink / --danger-ink, so the
+                    label is legible on the fill in both modes without a dark: variant and
+                    without the `text-black` these used to hard-code.
+
+                    aria-checked, not a class, carries the state — so the accessible state
+                    and the visible state cannot disagree. And the state is ALSO carried by
+                    the word: nilam reports danger/ok collapsing under deuteranopia at
+                    0.0248 here, so "Yes" and "No" are doing the WCAG 1.4.1 work. */}
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={value === 'yes'}
                   onClick={() => setAnswers((a) => ({ ...a, [key]: 'yes' }))}
-                  className={`py-2.5 rounded-lg border font-medium transition ${
-                    value === 'yes'
-                      ? 'bg-(--color-yes) text-black border-transparent'
-                      : 'bg-transparent text-(--color-yes) border-(--color-border) hover:border-(--color-yes)'
-                  }`}
+                  className={value === 'yes' ? 'n-btn aire-btn-ok' : 'n-btn text-ok'}
                 >
                   Yes
                 </button>
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={value === 'no'}
                   onClick={() => setAnswers((a) => ({ ...a, [key]: 'no' }))}
-                  className={`py-2.5 rounded-lg border font-medium transition ${
-                    value === 'no'
-                      ? 'bg-(--color-no) text-black border-transparent'
-                      : 'bg-transparent text-(--color-no) border-(--color-border) hover:border-(--color-no)'
-                  }`}
+                  className={value === 'no' ? 'n-btn n-btn-danger' : 'n-btn text-danger'}
                 >
                   No
                 </button>
@@ -94,24 +123,43 @@ export function Vote() {
         })}
       </div>
 
-      {error && <div className="text-sm text-(--color-no)">{error}</div>}
+      {error && (
+        <div className="n-note n-note-danger" role="alert">
+          <span className="n-note-glyph" aria-hidden="true">×</span>
+          <div>
+            <span className="n-note-title">Vote not recorded.</span> {error}
+          </div>
+        </div>
+      )}
 
-      <div className="flex gap-3">
+      <div className="n-cluster">
+        {/* aria-disabled rather than `disabled`, so the button stays focusable and a
+            screen-reader user can find out WHY it is unavailable from the hint below.
+            A `disabled` control is skipped by the tab order and explains nothing.
+            aria-busy is deliberately NOT combined with it — nilam's
+            `.n-btn[aria-disabled='true']` swaps the background to --neutral-2 and beats
+            `.n-btn-fill`, which leaves the --brand-ink spinner near-invisible in dark mode
+            at 1.09:1. submit() returns early unless allAnswered, so the two can never both
+            be true here. */}
         <button
           type="button"
           onClick={submit}
-          disabled={!allAnswered || submitting}
-          className="flex-1 py-3 rounded-lg bg-(--color-accent) text-black font-semibold hover:opacity-90 disabled:opacity-40 transition"
+          aria-disabled={!allAnswered || undefined}
+          aria-busy={submitting}
+          aria-describedby={allAnswered ? undefined : 'vote-blocked'}
+          className="n-btn n-btn-fill n-btn-lg flex-1"
         >
           {submitting ? 'Submitting…' : 'Submit vote'}
         </button>
-        <Link
-          to={`/p/${poll.id}/results`}
-          className="px-4 py-3 rounded-lg border border-(--color-border) text-(--color-muted) hover:text-(--color-fg) transition"
-        >
+        <Link to={`/p/${poll.id}/results`} className="n-btn n-btn-lg">
           Skip → results
         </Link>
       </div>
+      {!allAnswered && (
+        <p className="n-hint" id="vote-blocked">
+          Answer every question to submit.
+        </p>
+      )}
     </div>
   );
 }
