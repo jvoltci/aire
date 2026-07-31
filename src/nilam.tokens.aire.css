@@ -51,6 +51,8 @@
     --neutral-12: light-dark(oklch(0.4188 0.0070 219.5), oklch(0.7425 0.0070 219.5));
     --neutral-ink: light-dark(oklch(1.0000 0.0000 219.5), oklch(0.1600 0.0000 219.5));
     --surface: light-dark(oklch(1.0000 0.0000 219.5), oklch(0.2451 0.0000 219.5));
+    --ink-max: light-dark(oklch(0.1600 0.0000 219.5), oklch(1.0000 0.0000 219.5));
+    --void: light-dark(oklch(0.9000 0.0070 219.5), oklch(0.1000 0.0070 219.5));
 
     /* brand */
     --brand-1: light-dark(oklch(0.9800 0.0014 219.5), oklch(0.1750 0.0032 219.5));
@@ -153,6 +155,8 @@
     --neutral-12: light-dark(color(display-p3 0.28874 0.30397 0.31014), color(display-p3 0.65875 0.67627 0.68337));
     --neutral-ink: light-dark(color(display-p3 1 1 1), color(display-p3 0.05176 0.05176 0.05176));
     --surface: light-dark(color(display-p3 1 1 1), color(display-p3 0.12695 0.12695 0.12695));
+    --ink-max: light-dark(color(display-p3 0.05176 0.05176 0.05176), color(display-p3 1 1 1));
+    --void: light-dark(color(display-p3 0.85581 0.87419 0.88162), color(display-p3 0.00885 0.01417 0.01672));
 
     /* brand */
     --brand-1: light-dark(color(display-p3 0.97058 0.97468 0.97633), color(display-p3 0.05861 0.06616 0.06921));
