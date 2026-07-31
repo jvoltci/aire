@@ -43,9 +43,7 @@ export function Home() {
   return (
     <div className="n-stack gap-8">
       <div>
-        {/* The one display element in the app — --text-display at --weight-thin. See the
-            .aire-display comment in index.css for why it is a class and not a utility. */}
-        <h1 className="aire-display">Realtime polls.</h1>
+        <h1 className="text-display font-thin leading-tight">Realtime polls.</h1>
         <p className="mt-2 text-muted-foreground">
           Create a yes/no poll, share the link, watch votes update live across the edge.
         </p>

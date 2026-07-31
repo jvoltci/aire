@@ -40,11 +40,35 @@ export function Vote() {
     [poll, answers],
   );
 
+  /* THE BUSY STATE IS ENTERED ONLY ONCE THE FRAME IS ON THE WIRE, and that order is the fix
+   * for a lost vote rather than a tidy-up.
+   *
+   * This used to setSubmitting(true) and then send unconditionally. A vote is the one thing
+   * this app sends over the socket, and the socket is not always OPEN: it is CONNECTING for
+   * the whole handshake after this page renders, and CLOSED for up to 10s inside ws.ts's
+   * reconnect backoff. In both windows send() dropped the payload, `submitting` stayed true
+   * forever, and NOTHING cleared it — only a `voted` or `error` message does, and neither was
+   * ever going to arrive because nothing had been asked.
+   *
+   * Measured against the real worker, closing the socket from under the page and then
+   * submitting: 0 frames sent, button parked on "Submitting…" with aria-busy="true", 0 error
+   * notes, server tally still total 0 after the socket had reconnected. And unrecoverable —
+   * aria-busy sets pointer-events: none and the `submitting` guard above blocks the keyboard
+   * path, so the reader's only way out is a page reload. The vote was silently lost.
+   *
+   * NOT a queue-and-flush on reconnect, deliberately. That would send the vote at a moment
+   * the reader had stopped expecting it, and it hides a dropped connection instead of saying
+   * so. ws.ts reconnects on its own within 10s, so telling them and letting them press again
+   * is both shorter and honest. The local mock could not have caught this: it answered
+   * synchronously and was never anything but open. */
   const submit = () => {
     if (!poll || !socket || !allAnswered || submitting) return;
-    setSubmitting(true);
     setError(null);
-    socket.send({ type: 'vote', voterId: getVoterId(), answers });
+    if (!socket.send({ type: 'vote', voterId: getVoterId(), answers })) {
+      setError('The live connection dropped. It reconnects by itself — try again in a moment.');
+      return;
+    }
+    setSubmitting(true);
   };
 
   if (error && !poll) {

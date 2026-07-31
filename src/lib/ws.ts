@@ -8,7 +8,14 @@ export type WsMessage =
   | { type: 'pong' };
 
 export interface PollSocket {
-  send(payload: object): void;
+  /* Returns whether the frame actually left, and the return value is load-bearing rather
+     than informational. A WebSocket that is CONNECTING or CLOSED cannot carry a frame, and
+     this socket is both of those on a schedule: it is CONNECTING for the whole handshake
+     after the Vote page renders, and CLOSED for up to 10s inside the reconnect backoff
+     below. A caller that assumes the payload went out will wait forever for a reply that
+     nobody was asked for — see the comment on submit() in Vote.tsx, which is the bug this
+     return value exists to make impossible. */
+  send(payload: object): boolean;
   close(): void;
 }
 
@@ -49,7 +56,11 @@ export function openPollSocket(
   connect();
 
   return {
-    send(payload) { ws?.readyState === WebSocket.OPEN && ws.send(JSON.stringify(payload)); },
+    send(payload) {
+      if (ws?.readyState !== WebSocket.OPEN) return false;
+      ws.send(JSON.stringify(payload));
+      return true;
+    },
     close() { closed = true; if (pingTimer) clearInterval(pingTimer); ws?.close(); },
   };
 }

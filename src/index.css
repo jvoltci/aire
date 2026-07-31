@@ -88,6 +88,25 @@
  * Reported; not changed from here. */
 @layer theme, base, nilam.motion, nilam.tokens, nilam.base, nilam.components, nilam.utilities, components, utilities;
 
+/* Scan src/ only.
+ *
+ * Tailwind v4 scans every tracked file by default, and a class name is just a word — so PROSE
+ * generates CSS. README.md has the sentence "there is one token block and no dark: variants",
+ * and the word "block" in it was putting `.block{display:block}` into the shipped stylesheet.
+ * Nothing in src/ uses that class.
+ *
+ * 21 bytes, so the cost is nothing and the point is not the bytes: any word in any tracked
+ * markdown, changelog or comment can silently become a rule, and a build that emits CSS nobody
+ * wrote is a build you cannot reason about. A workflow file added during this work put
+ * `.invisible` in for the same reason.
+ *
+ * `@source not` is the right tool. `@source "./"` was the first attempt and it made things
+ * WORSE — it ADDS a path to the automatic scan rather than replacing it, so the CSS grew by
+ * 600 bytes. Measured, not assumed.
+ *
+ * Verified: with this line, `.block` is absent from dist. */
+@source not "../*.md";
+
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/preflight.css' layer(base);
 
@@ -169,29 +188,18 @@ body,
     animation: aire-pulse-ring 1.6s var(--ease-out) infinite;
   }
 
-  /* ── the one display element ────────────────────────────────────────
+  /* .aire-display is GONE. nilam 0.5.0's bridge maps the type scale, the weights, leading and
+   * tracking into Tailwind's @theme namespaces, so `text-display font-thin leading-tight` are
+   * real utilities now and a local class would be a second scale to keep in sync.
    *
-   * --text-display paired with --weight-thin (200), which is the pairing nilam's scale
-   * explicitly recommends and almost nothing uses: "large type gets its presence from
-   * size, and adding weight to both is why 'bold and big' reads as shouting rather than
-   * as confidence." Used exactly once in the app, on the Home heading, because aire is
-   * one thing — realtime polls — and that is the sentence saying so.
+   * The comment that stood here said the omission was "a gap in the bridge rather than a
+   * preference", which was right, and it was reported and closed. Worth recording why it had
+   * looked unclosable: nilam names its sizes --text-1 and Tailwind's font-size namespace is
+   * also --text-*, so the mapping reads as circular. It is not — @theme inline does not emit a
+   * theme variable, it inlines the value at the use site — and --font-sans had been doing
+   * exactly that all along.
    *
-   * A LOCAL CLASS RATHER THAN A UTILITY, and that is a gap in the bridge rather than a
-   * preference. nilam.tailwind.css maps colour, radius, shadow, easing and font-family
-   * into Tailwind's @theme namespaces but NOT the type scale, the weights or the space
-   * scale — so `text-display` and a 200 `font-thin` do not exist as classes, and the rest
-   * of this app's bare type (text-sm, text-xs) still comes from TAILWIND's scale, not
-   * nilam's. Two type scales coexist as a result. Reported upstream; not worked around
-   * here, because mapping them locally would be a second scale to keep in sync.
-   *
-   * text-wrap: balance comes from nilam.base's heading rule. letter-spacing does too, and
-   * at this size -0.02em is right, so it is left alone. */
-  .aire-display {
-    font-size: var(--text-display);
-    font-weight: var(--weight-thin);
-    line-height: var(--leading-tight);
-  }
+   * text-wrap: balance and letter-spacing still come from nilam.base's heading rule. */
 
   /* ── the tally meter, and the two measurements that shaped it ───────
    *
