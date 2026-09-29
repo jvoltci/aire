@@ -4,13 +4,13 @@
 
 Realtime polls at the edge. Create a yes/no poll, share the link, watch votes update live.
 
-**Live:** https://jvoltci.github.io/aire/
+**Live:** https://lognjais.github.io/aire/
 **API:** https://aire-api.altrusian.workers.dev
 
 ## Stack
 
 - **React 19** + **TypeScript** + **Vite 6**
-- **Tailwind CSS 4**, imported granularly so [nilam](https://jvoltci.github.io/nilam/)
+- **Tailwind CSS 4**, imported granularly so [nilam](https://lognjais.github.io/nilam/)
   sits between Tailwind's `base` and `utilities` layers
 - **nilam** for colour, solved at aire's own measured brand hue of **219.5** rather than
   nilam's signature 285 — see the header comment in `src/index.css` for the reasoning and
@@ -20,7 +20,7 @@ Realtime polls at the edge. Create a yes/no poll, share the link, watch votes up
   token block and no `dark:` variants
 - **HashRouter** (GitHub Pages SPA-friendly)
 - Native **WebSocket** + auto-reconnect
-- Backend lives in [aire-api](https://github.com/jvoltci/aire-api): Cloudflare Worker + Durable Object + D1
+- Backend lives in [aire-api](https://github.com/lognjais/aire-api): Cloudflare Worker + Durable Object + D1
 
 ## Run locally
 

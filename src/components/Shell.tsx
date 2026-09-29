@@ -21,7 +21,7 @@ export function Shell({ children }: { children: ReactNode }) {
             </span>
           </Link>
           <a
-            href="https://github.com/jvoltci/aire"
+            href="https://github.com/lognjais/aire"
             target="_blank"
             rel="noreferrer"
             className="n-btn n-btn-ghost n-btn-sm"
